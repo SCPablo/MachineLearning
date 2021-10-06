@@ -9,6 +9,7 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+<<<<<<< HEAD
 ```{r}
 library(tidyverse)
 ```
@@ -16,5 +17,6 @@ library(tidyverse)
 ```{r}
 Datos <- read.table("./data/Diabetes.csv", sep = ";", header = TRUE)
 ```
+
 
 
