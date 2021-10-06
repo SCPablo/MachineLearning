@@ -1,0 +1,20 @@
+---
+title: "Assignment 1"
+author: "Rodríguez González, Álvaro"
+date: "10/6/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+Datos <- read.table("./data/Diabetes.csv", sep = ";", header = TRUE)
+```
+
+
