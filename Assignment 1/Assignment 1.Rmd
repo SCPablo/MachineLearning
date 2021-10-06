@@ -15,8 +15,43 @@ library(tidyverse)
 ```
 
 ```{r}
-Datos <- read.table("./data/Diabetes.csv", sep = ";", header = TRUE)
+datos <- read.table("./data/Diabetes.csv", sep = ";", header = TRUE)
 ```
+
+
+Resumen general del datasets
+```{r}
+str(datos)
+summary(datos)
+```
+
+
+
+Resumen de pacientes con diabetes 
+```{r}
+datos %>%
+  count(DIABETES) %>%
+  mutate(frecuenciaAbosulta = n, frecuenciaRelativa = frecuenciaAbosulta/sum(n), n = NULL)
+```
+Resumen edad
+```{r}
+ggplot(datos) +
+  geom_boxplot(aes(AGE))
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
