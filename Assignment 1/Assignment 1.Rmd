@@ -9,7 +9,6 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-<<<<<<< HEAD
 ```{r}
 library(tidyverse)
 ```
@@ -52,6 +51,28 @@ ggplot(datos) +
 
 
 
+
+
+
+```{r}
+# Histograma pregnant
+table(Datos$PREGNANT)
+```
+
+
+```{r}
+# Glucose
+ggplot(Datos, aes(x = GLUCOSE)) + 
+  geom_histogram(fill = "red", color = "black")
+
+boxplotGlucosa <- boxplot(Datos$GLUCOSE)
+
+ggplot(Datos) + 
+  geom_boxplot(aes(y = GLUCOSE),fill = "red", color = "black") + 
+  geom_point(aes(x = GLUCOSE),position = "jitter")
+
+boxplotGlucosa$out
+```
 
 
 
