@@ -127,85 +127,68 @@ ggplot(datos) +
   geom_boxplot(aes(AGE))
 ```
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
->>>>>>> 61b0c8b39f71a54f3e58d05020e95b6f71510798
-
 ```{r}
 # Tabla de frecuencias absolutas de pregnant
-table(Datos$PREGNANT)
+table(datos$PREGNANT)
 ```
 
 
 ```{r}
 # Histograma de Glucose
-ggplot(Datos, aes(x = GLUCOSE)) + 
+ggplot(datos, aes(x = GLUCOSE)) + 
   geom_histogram(fill = "red", color = "black")
 ```
 
 ```{r}
-boxplotGlucosa <- boxplot(Datos$GLUCOSE)
+boxplotGlucosa <- boxplot(datos$GLUCOSE)
 boxplotGlucosa$out
 ```
 
 
 ```{r}
-ggplot(Datos, aes(x = BLOODPRESS)) + 
+ggplot(datos, aes(x = BLOODPRESS)) + 
   geom_histogram(color = "black", fill = "red")
 ```
 
 ```{r}
-boxplotBLPR <- boxplot(Datos$BLOODPRESS)
+boxplotBLPR <- boxplot(datos$BLOODPRESS)
 boxplotBLPR$out
 ```
 
 ```{r}
-ggplot(Datos, aes(x = SKINTHICKNESS)) + 
+ggplot(datos, aes(x = SKINTHICKNESS)) + 
   geom_histogram(color = "black", fill = "red")
 ```
 
 
 
 ```{r}
-boxplotSKTH <- boxplot(Datos$SKINTHICKNESS)
+boxplotSKTH <- boxplot(datos$SKINTHICKNESS)
 boxplotSKTH$out
 ```
 
 
 ```{r}
-ggplot(Datos, aes(x = INSULIN)) + 
+ggplot(datos, aes(x = INSULIN)) + 
   geom_histogram(color = "black", fill = "red")
 ```
 
 
 
 ```{r}
-boxplotIN <- boxplot(Datos$INSULIN)
+boxplotIN <- boxplot(datos$INSULIN)
 boxplotIN$out
 ```
 
 ```{r}
-ggplot(Datos, aes(x = BODYMASSINDEX)) + 
+ggplot(datos, aes(x = BODYMASSINDEX)) + 
   geom_histogram(color = "black", fill = "red")
 ```
 
 
 
 ```{r}
-Datos_BMI <- Datos %>%
+datos_BMI <- datos %>%
   select(BODYMASSINDEX) %>%
   filter(BODYMASSINDEX > 1) %>%
   arrange(desc(BODYMASSINDEX))
@@ -213,7 +196,7 @@ Datos_BMI <- Datos %>%
 
 # Miro normalidad de los datos 
 
-ggplot(Datos_BMI, aes(x = BODYMASSINDEX)) + 
+ggplot(datos_BMI, aes(x = BODYMASSINDEX)) + 
   geom_histogram(aes(y = stat(density)),color = "black", fill = "red", alpha = 0.6) + 
   geom_density(col = "blue")
 
