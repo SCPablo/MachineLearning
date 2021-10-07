@@ -26,30 +26,44 @@ datos <- read.table("./data/Diabetes.csv", sep = ";", header = TRUE)
 Miremos como son nuestros datos:
 
 ```{r}
-str(Datos)
+str(datos)
 
 # Todas las variables tienen su tipo de variable correcto
 ```
 
 ```{r}
-<<<<<<< HEAD
-summary(Datos)
+summary(datos)
 
 # No hay datos nulos, podemos trabajar bien
 ```
 
 
-<<<<<<< HEAD
+
 # Análisis Exploratorio
-=======
+
+
 Resumen general del datasets
 ```{r}
 str(datos)
 summary(datos)
-=======
-datos <- read.table("./data/Diabetes.csv", sep = ";", header = TRUE)
->>>>>>> 61b0c8b39f71a54f3e58d05020e95b6f71510798
 ```
+
+
+
+Resumen de pacientes con diabetes 
+```{r}
+datos %>%
+  count(DIABETES) %>%
+  mutate(frecuenciaAbosulta = n, frecuenciaRelativa = frecuenciaAbosulta/sum(n), n = NULL)
+```
+datos <- read.table("./data/Diabetes.csv", sep = ";", header = TRUE)
+
+
+```{r}
+ggplot(datos) +
+  geom_boxplot(aes(AGE))
+```
+
 
 
 Resumen general del datasets
@@ -71,6 +85,19 @@ Resumen edad
 ggplot(datos) +
   geom_boxplot(aes(AGE))
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
