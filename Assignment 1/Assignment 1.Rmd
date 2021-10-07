@@ -9,35 +9,199 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+# Preprocesamiento: Carga datos y librerias
+
+Cargamos las librerias a usar:
+
 ```{r}
 library(tidyverse)
 ```
 
+Cargamos los datos:
+
 ```{r}
-Datos <- read.table("./data/Diabetes.csv", sep = ";", header = TRUE)
+datos <- read.table("./data/Diabetes.csv", sep = ";", header = TRUE)
+```
+
+Miremos como son nuestros datos:
+
+```{r}
+str(Datos)
+
+# Todas las variables tienen su tipo de variable correcto
+```
+
+```{r}
+<<<<<<< HEAD
+summary(Datos)
+
+# No hay datos nulos, podemos trabajar bien
+```
+
+
+<<<<<<< HEAD
+# Análisis Exploratorio
+=======
+Resumen general del datasets
+```{r}
+str(datos)
+summary(datos)
+=======
+datos <- read.table("./data/Diabetes.csv", sep = ";", header = TRUE)
+>>>>>>> 61b0c8b39f71a54f3e58d05020e95b6f71510798
+```
+
+
+Resumen general del datasets
+```{r}
+str(datos)
+summary(datos)
 ```
 
 
 
+Resumen de pacientes con diabetes 
 ```{r}
-# Histograma pregnant
+datos %>%
+  count(DIABETES) %>%
+  mutate(frecuenciaAbosulta = n, frecuenciaRelativa = frecuenciaAbosulta/sum(n), n = NULL)
+```
+Resumen edad
+```{r}
+ggplot(datos) +
+  geom_boxplot(aes(AGE))
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Resumen de pacientes con diabetes 
+```{r}
+datos %>%
+  count(DIABETES) %>%
+  mutate(frecuenciaAbosulta = n, frecuenciaRelativa = frecuenciaAbosulta/sum(n), n = NULL)
+```
+Resumen edad
+```{r}
+ggplot(datos) +
+  geom_boxplot(aes(AGE))
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+>>>>>>> 61b0c8b39f71a54f3e58d05020e95b6f71510798
+
+```{r}
+# Tabla de frecuencias absolutas de pregnant
 table(Datos$PREGNANT)
 ```
 
 
 ```{r}
-# Glucose
+# Histograma de Glucose
 ggplot(Datos, aes(x = GLUCOSE)) + 
   geom_histogram(fill = "red", color = "black")
+```
 
+```{r}
 boxplotGlucosa <- boxplot(Datos$GLUCOSE)
-
-ggplot(Datos) + 
-  geom_boxplot(aes(y = GLUCOSE),fill = "red", color = "black") + 
-  geom_point(aes(x = GLUCOSE),position = "jitter")
-
 boxplotGlucosa$out
 ```
+
+
+```{r}
+ggplot(Datos, aes(x = BLOODPRESS)) + 
+  geom_histogram(color = "black", fill = "red")
+```
+
+```{r}
+boxplotBLPR <- boxplot(Datos$BLOODPRESS)
+boxplotBLPR$out
+```
+
+```{r}
+ggplot(Datos, aes(x = SKINTHICKNESS)) + 
+  geom_histogram(color = "black", fill = "red")
+```
+
+
+
+```{r}
+boxplotSKTH <- boxplot(Datos$SKINTHICKNESS)
+boxplotSKTH$out
+```
+
+
+```{r}
+ggplot(Datos, aes(x = INSULIN)) + 
+  geom_histogram(color = "black", fill = "red")
+```
+
+
+
+```{r}
+boxplotIN <- boxplot(Datos$INSULIN)
+boxplotIN$out
+```
+
+```{r}
+ggplot(Datos, aes(x = BODYMASSINDEX)) + 
+  geom_histogram(color = "black", fill = "red")
+```
+
+
+
+```{r}
+Datos_BMI <- Datos %>%
+  select(BODYMASSINDEX) %>%
+  filter(BODYMASSINDEX > 1) %>%
+  arrange(desc(BODYMASSINDEX))
+
+
+# Miro normalidad de los datos 
+
+ggplot(Datos_BMI, aes(x = BODYMASSINDEX)) + 
+  geom_histogram(aes(y = stat(density)),color = "black", fill = "red", alpha = 0.6) + 
+  geom_density(col = "blue")
+
+
+
+```
+
+
+
+
+
+
+
+
+
 
 
 
