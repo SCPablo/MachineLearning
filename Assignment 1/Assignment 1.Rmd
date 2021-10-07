@@ -46,6 +46,8 @@ Resumen general del datasets
 ```{r}
 str(datos)
 summary(datos)
+datos <- datos %>%
+  mutate(DIABETES = as.factor(DIABETES))
 ```
 
 
@@ -56,72 +58,12 @@ datos %>%
   count(DIABETES) %>%
   mutate(frecuenciaAbosulta = n, frecuenciaRelativa = frecuenciaAbosulta/sum(n), n = NULL)
 ```
-datos <- read.table("./data/Diabetes.csv", sep = ";", header = TRUE)
-
-
 ```{r}
-ggplot(datos) +
-  geom_boxplot(aes(AGE))
+pie(datos$DIABETES)
 ```
 
 
 
-Resumen general del datasets
-```{r}
-str(datos)
-summary(datos)
-```
-
-
-
-Resumen de pacientes con diabetes 
-```{r}
-datos %>%
-  count(DIABETES) %>%
-  mutate(frecuenciaAbosulta = n, frecuenciaRelativa = frecuenciaAbosulta/sum(n), n = NULL)
-```
-Resumen edad
-```{r}
-ggplot(datos) +
-  geom_boxplot(aes(AGE))
-```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Resumen de pacientes con diabetes 
-```{r}
-datos %>%
-  count(DIABETES) %>%
-  mutate(frecuenciaAbosulta = n, frecuenciaRelativa = frecuenciaAbosulta/sum(n), n = NULL)
-```
-Resumen edad
 ```{r}
 ggplot(datos) +
   geom_boxplot(aes(AGE))
@@ -204,9 +146,15 @@ ggplot(datos_BMI, aes(x = BODYMASSINDEX)) +
 
 ```
 
+```{r}
+ggplot(datos) + 
+  geom_histogram(aes(x = PEDIGREEFUNC), color = "black", fill = "red")
+```
 
-
-
+```{r}
+boxplotPEDI <- boxplot(datos$PEDIGREEFUNC)
+boxplotPEDI$out
+```
 
 
 
