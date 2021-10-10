@@ -15,6 +15,10 @@ Cargamos las librerias a usar:
 
 ```{r}
 library(tidyverse)
+library(GGally)
+library(MLTools)
+library(caret)
+library(ROCR)
 ```
 
 Cargamos los datos:
@@ -23,19 +27,6 @@ Cargamos los datos:
 datos <- read.table("./data/Diabetes.csv", sep = ";", header = TRUE)
 ```
 
-Miremos como son nuestros datos:
-
-```{r}
-str(datos)
-
-# Todas las variables tienen su tipo de variable correcto
-```
-
-```{r}
-summary(datos)
-
-# No hay datos nulos, podemos trabajar bien
-```
 
 
 
@@ -46,9 +37,16 @@ Resumen general del datasets
 ```{r}
 str(datos)
 summary(datos)
+```
+
+Realizamos algunos cambios en el dataset
+```{r}
+datos <- datos %>%
+  mutate(DIABETES = ifelse(DIABETES == 1, "Si", "No"))
 datos <- datos %>%
   mutate(DIABETES = as.factor(DIABETES))
 ```
+Vemos que no hay datos nulos y por lo tanto trabajaremos con todas las filas que hemos cargado
 
 
 
@@ -58,9 +56,6 @@ datos %>%
   count(DIABETES) %>%
   mutate(frecuenciaAbosulta = n, frecuenciaRelativa = frecuenciaAbosulta/sum(n), n = NULL)
 ```
-```{r}
-pie(datos$DIABETES)
-```
 
 
 
@@ -69,66 +64,61 @@ ggplot(datos) +
   geom_boxplot(aes(AGE))
 ```
 
+Tabla de frecuencias absolutas de pregnant
 ```{r}
-# Tabla de frecuencias absolutas de pregnant
 table(datos$PREGNANT)
 ```
 
-
+Histograma de Glucose
 ```{r}
-# Histograma de Glucose
 ggplot(datos, aes(x = GLUCOSE)) + 
-  geom_histogram(fill = "red", color = "black")
+  geom_histogram(aes(y = stat(density)), fill = "red", color = "black", bins = 20, alpha = 0.8) + 
+  geom_density(color = "green", size = 1.5)
 ```
 
+
+Analizamos la varibale Glucosa
 ```{r}
-boxplotGlucosa <- boxplot(datos$GLUCOSE)
-boxplotGlucosa$out
+ggplot(datos) + 
+  geom_boxplot(aes(y = GLUCOSE))
 ```
 
 
 ```{r}
 ggplot(datos, aes(x = BLOODPRESS)) + 
-  geom_histogram(color = "black", fill = "red")
+  geom_histogram(aes(y = stat(density)), color = "black", fill = "red", bins = 20, alpha = 0.8) + 
+  geom_density(aes(BLOODPRESS), color = "green", size = 1.5)
+boxplot(datos$BLOODPRESS)
 ```
 
-```{r}
-boxplotBLPR <- boxplot(datos$BLOODPRESS)
-boxplotBLPR$out
-```
 
+Analizamos la variable SKINTHICKNESS
 ```{r}
 ggplot(datos, aes(x = SKINTHICKNESS)) + 
-  geom_histogram(color = "black", fill = "red")
+  geom_histogram(aes(y = stat(density)), color = "black", fill = "red", bins = 20, alpha = 0.8) +
+  geom_density(aes(SKINTHICKNESS), color = "green", size = 1.5)
+boxplot(datos$SKINTHICKNESS)
 ```
 
 
-
-```{r}
-boxplotSKTH <- boxplot(datos$SKINTHICKNESS)
-boxplotSKTH$out
-```
-
-
+Vemos la variable INSULIN
 ```{r}
 ggplot(datos, aes(x = INSULIN)) + 
-  geom_histogram(color = "black", fill = "red")
+  geom_histogram(aes(y = stat(density)), color = "black", fill = "red", bins = 20, alpha = 0.8) +
+  geom_density(aes(INSULIN), size = 1.5, color = "green")
+boxplot(datos$INSULIN)
 ```
 
 
-
-```{r}
-boxplotIN <- boxplot(datos$INSULIN)
-boxplotIN$out
-```
-
+Vemos la variable BODYMASSINDEX
 ```{r}
 ggplot(datos, aes(x = BODYMASSINDEX)) + 
-  geom_histogram(color = "black", fill = "red")
+  geom_histogram(aes(y = stat(density)), color = "black", fill = "red", bins = 20, alpha = 0.8) +
+  geom_density(aes(BODYMASSINDEX), color = "green", size = 1.5)
 ```
 
 
-
+¿Esto es lo mismo que lo de arriba, no?
 ```{r}
 datos_BMI <- datos %>%
   select(BODYMASSINDEX) %>%
@@ -145,15 +135,62 @@ ggplot(datos_BMI, aes(x = BODYMASSINDEX)) +
 
 
 ```
-
+Analizamos la por último la variable PEDIGREEFUNC
 ```{r}
 ggplot(datos) + 
-  geom_histogram(aes(x = PEDIGREEFUNC), color = "black", fill = "red")
+  geom_histogram(aes(x = PEDIGREEFUNC, y = stat(density)), color = "black", fill = "red", bins = 20, alpha = 0.8) +
+  geom_density(aes(PEDIGREEFUNC), color = "green", size = 1.5)
+boxplot(datos$PEDIGREEFUNC)
 ```
 
+
+
+
+# Identification and fitting process of classification models
+
+Dividimos el cnjunto de datos en training y en test . Creamos un conjunto partido de 80% entreanmienot y 20% test.
+
 ```{r}
-boxplotPEDI <- boxplot(datos$PEDIGREEFUNC)
-boxplotPEDI$out
+
+ggpairs(datos,aes(color = DIABETES, alpha = 0.3))
+PlotDataframe(fdata = datos, 
+              output.name = "DIABETES")
+
+
+```
+
+
+```{r}
+trainIndex <- createDataPartition(datos$DIABETES,      #output variable. createDataPartition creates proportional partitions
+                                  p = 0.8,      #split probability for training
+                                  list = FALSE, #Avoid output as a list
+                                  times = 1)    #only one partition
+fTR <- datos[trainIndex,]
+fTS <- datos[-trainIndex,]
+fTR_eval <- fTR
+fTS_eval <- fTS
+
+```
+
+
+
+```{r}
+ctrl <- trainControl(method = "cv",                        #k-fold cross-validation
+                     number = 10,                          #Number of folds
+                     summaryFunction = defaultSummary,     #Performance summary for comparing models in hold-out samples.
+                     classProbs = TRUE) 
+```
+
+
+
+Empezamos con la regresión logística
+
+```{r}
+LogReg.fit <- train( fTR[, c("PREGNANT", "GLUCOSE", "BLOODPRESS", "SKINTHICKNESS", "INSULIN", "BODYMASSINDEX", "AGE")], 
+                       y = fTR$DIABETES,
+                       method = "glm",
+                       metric = "ROC",
+                       trControl = ctrl)
 ```
 
 
