@@ -13,7 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 Cargamos las librerias a usar:
 
-```{r}
+```{r, message=FALSE,warning=FALSE}
 library(tidyverse)
 library(GGally)
 library(MLTools)
@@ -45,6 +45,7 @@ datos <- datos %>%
   mutate(DIABETES = ifelse(DIABETES == 1, "Si", "No"))
 datos <- datos %>%
   mutate(DIABETES = as.factor(DIABETES))
+str(datos)
 ```
 Vemos que no hay datos nulos y por lo tanto trabajaremos con todas las filas que hemos cargado
 
@@ -69,27 +70,23 @@ Tabla de frecuencias absolutas de pregnant
 table(datos$PREGNANT)
 ```
 
-Histograma de Glucose
+Analizamos la varibale Glucosa
 ```{r}
 ggplot(datos, aes(x = GLUCOSE)) + 
   geom_histogram(aes(y = stat(density)), fill = "red", color = "black", bins = 20, alpha = 0.8) + 
   geom_density(color = "green", size = 1.5)
-```
-
-
-Analizamos la varibale Glucosa
-```{r}
 ggplot(datos) + 
   geom_boxplot(aes(y = GLUCOSE))
 ```
 
-
+Vemos la variable Bloodpress
 ```{r}
 ggplot(datos, aes(x = BLOODPRESS)) + 
   geom_histogram(aes(y = stat(density)), color = "black", fill = "red", bins = 20, alpha = 0.8) + 
   geom_density(aes(BLOODPRESS), color = "green", size = 1.5)
 boxplot(datos$BLOODPRESS)
 ```
+
 
 
 Analizamos la variable SKINTHICKNESS
@@ -117,25 +114,7 @@ ggplot(datos, aes(x = BODYMASSINDEX)) +
   geom_density(aes(BODYMASSINDEX), color = "green", size = 1.5)
 ```
 
-
-¿Esto es lo mismo que lo de arriba, no?
-```{r}
-datos_BMI <- datos %>%
-  select(BODYMASSINDEX) %>%
-  filter(BODYMASSINDEX > 1) %>%
-  arrange(desc(BODYMASSINDEX))
-
-
-# Miro normalidad de los datos 
-
-ggplot(datos_BMI, aes(x = BODYMASSINDEX)) + 
-  geom_histogram(aes(y = stat(density)),color = "black", fill = "red", alpha = 0.6) + 
-  geom_density(col = "blue")
-
-
-
-```
-Analizamos la por último la variable PEDIGREEFUNC
+Analizamos por último la variable PEDIGREEFUNC
 ```{r}
 ggplot(datos) + 
   geom_histogram(aes(x = PEDIGREEFUNC, y = stat(density)), color = "black", fill = "red", bins = 20, alpha = 0.8) +
@@ -145,26 +124,55 @@ boxplot(datos$PEDIGREEFUNC)
 
 
 
+Ahora intentamos visualizar algunas relaciones entre variables
 
-# Identification and fitting process of classification models
-
-Dividimos el cnjunto de datos en training y en test . Creamos un conjunto partido de 80% entreanmienot y 20% test.
-
+En un primer momento entre la Glucose, Bloodpress y Diabetes
 ```{r}
+ggplot(datos,aes(x = GLUCOSE , y = BLOODPRESS)) + 
+  geom_point(aes(color = DIABETES))
+```
+Ahora entre Glucosa, Insulina y Diabetes
+```{r}
+ggplot(datos,aes(x = GLUCOSE , y = INSULIN)) + 
+  geom_point(aes(color = DIABETES))
+```
 
-ggpairs(datos,aes(color = DIABETES, alpha = 0.3))
-PlotDataframe(fdata = datos, 
-              output.name = "DIABETES")
+Glucose - BodyMassIndex y Diabetes
+```{r}
+ggplot(datos,aes(x = GLUCOSE , y = BODYMASSINDEX)) + 
+  geom_point(aes(color = DIABETES))
+```
 
-
+Bloodpress, BodyMassIndex y Diabetes
+```{r}
+ggplot(datos,aes(x = BLOODPRESS, y = BODYMASSINDEX)) + 
+  geom_point(aes(color = DIABETES))
 ```
 
 
+Dibujamos todas las variables juntas como resumen
 ```{r}
-trainIndex <- createDataPartition(datos$DIABETES,      #output variable. createDataPartition creates proportional partitions
-                                  p = 0.8,      #split probability for training
-                                  list = FALSE, #Avoid output as a list
-                                  times = 1)    #only one partition
+ggpairs(datos,aes(color = DIABETES, alpha = 0.3))
+PlotDataframe(fdata = datos, 
+              output.name = "DIABETES")
+```
+
+
+# Identification and fitting process of classification models
+
+Lo primero que hacemos antes de realizar ningún modelo será informarnos acerca del tema, con la finalidad de conocer cuales son las variables que más afectan a la diabetes.
+
+Tras leer numerosos articulos podemos llegar a la conclusion que las variables que mas afectan a nuestra variable respuesta son tener obesidad, edad, presión arterial alta, antecedentes familiares y altos niveles de glucosa. 
+
+Para comenzar con el modelo lo que haremos será dividir nuestra muestra en 2 grupos, el de entrenamiento y el de test. La proporción con la que trabajaremos será de un 80-20.
+
+
+
+```{r}
+trainIndex <- createDataPartition(datos$DIABETES,     
+                                  p = 0.8,      
+                                  list = FALSE, 
+                                  times = 1)
 fTR <- datos[trainIndex,]
 fTS <- datos[-trainIndex,]
 fTR_eval <- fTR
@@ -173,6 +181,7 @@ fTS_eval <- fTS
 ```
 
 
+Definimos el initialize trainControl:
 
 ```{r}
 ctrl <- trainControl(method = "cv",                        #k-fold cross-validation
@@ -182,15 +191,89 @@ ctrl <- trainControl(method = "cv",                        #k-fold cross-validat
 ```
 
 
-
-Empezamos con la regresión logística
+Empezamos con la regresión logística. HAY 2 formas distintas de hacerlo. Elige la que quieras. Da mejores resultados la primera
 
 ```{r}
-LogReg.fit <- train( fTR[, c("PREGNANT", "GLUCOSE", "BLOODPRESS", "SKINTHICKNESS", "INSULIN", "BODYMASSINDEX", "AGE")], 
+LogReg.fit <- train(form = DIABETES ~ .,
+                    data = fTR,
+                    method = "glm",
+                    preProcess = c("center","scale"),
+                    metric = "Accuracy",
+                    trControl = ctrl)
+```
+
+```{r}
+LogReg.fit <- train( fTR[, c("PREGNANT", "GLUCOSE", "BLOODPRESS", "SKINTHICKNESS", "INSULIN", "BODYMASSINDEX", "PEDIGREEFUNC", "AGE")], 
                        y = fTR$DIABETES,
                        method = "glm",
                        metric = "ROC",
                        trControl = ctrl)
+```
+
+
+
+Observamos datos que han salido:
+```{r}
+LogReg.fit
+```
+
+```{r}
+summary(LogReg.fit)
+```
+
+Ahora evaluamos con nuestro modelo los datos: 
+
+```{r}
+fTR_eval$LRprob <- predict(LogReg.fit, type="prob", newdata = fTR) # predict probabilities
+fTR_eval$LRpred <- predict(LogReg.fit, type="raw", newdata = fTR) # predict classes 
+
+fTS_eval$LRprob <- predict(LogReg.fit, type="prob", newdata = fTS) # predict probabilities
+fTS_eval$LRpred <- predict(LogReg.fit, type="raw", newdata = fTS) # predict classes 
+```
+
+Representamos:
+
+```{r}
+Plot2DClass(fTR[,c("PREGNANT", "GLUCOSE", "BLOODPRESS", "SKINTHICKNESS", "INSULIN", "BODYMASSINDEX","PEDIGREEFUNC", "AGE")], #Input variables 
+            fTR$DIABETES,     #Output variable
+            LogReg.fit,#Fitted model with caret
+            var1 = "BODYMASSINDEX", var2 = "BLOODPRESS", #variables to represent the plot
+            selClass = "YES")     #Class output to be analyzed
+```
+
+Vamos a evaluar los resultados
+
+Primero con la matriz de confusión
+
+Training
+```{r}
+confusionMatrix(data = fTR_eval$LRpred, #Predicted classes
+                reference = fTR_eval$DIABETES, #Real observations
+                positive = "Si") #Class labeled as Positive
+```
+
+
+Test
+```{r}
+confusionMatrix(fTS_eval$LRpred, 
+                fTS_eval$DIABETES, 
+                positive = "Si")
+```
+
+Veamos las gráficas
+
+Training
+```{r}
+PlotClassPerformance(fTR_eval$DIABETES,       #Real observations
+                     fTR_eval$LRprob,  #predicted probabilities
+                     selClass = "Si") #Class to be analyzed
+```
+
+Test
+```{r}
+PlotClassPerformance(fTS_eval$DIABETES,       #Real observations
+                     fTS_eval$LRprob,  #predicted probabilities
+                     selClass = "Si") #Class to be analyzed)
 ```
 
 
