@@ -1,6 +1,6 @@
 ---
 title: "Assignment 1"
-author: "Rodríguez González, Álvaro"
+author: "Álvaro y Pablo"
 date: "10/6/2021"
 output: pdf_document
 ---
@@ -47,115 +47,501 @@ datos <- datos %>%
   mutate(DIABETES = as.factor(DIABETES))
 str(datos)
 ```
+
 Vemos que no hay datos nulos y por lo tanto trabajaremos con todas las filas que hemos cargado
 
+Antes de iniciar con todos los gráficos veamos una representación de todos con todos:
 
+```{r message=FALSE, warning=FALSE}
+ggpairs(datos, aes(color = DIABETES))
+```
 
-Resumen de pacientes con diabetes 
+Da la sensación de existir bastantes valores atipicos, veamoslo:
+
 ```{r}
-datos %>%
-  count(DIABETES) %>%
-  mutate(frecuenciaAbosulta = n, frecuenciaRelativa = frecuenciaAbosulta/sum(n), n = NULL)
+boxplot_glucosa <- boxplot(datos$GLUCOSE)
+boxplot_glucosa$out
+```
+Una persona con nivel de glucosa 0 es imposible que este viva, por ello vamos a eliminar dichas observaciones.
+
+```{r}
+datos2 <- datos
+datos2 <- datos2[datos2$GLUCOSE > 0, ]
 ```
 
 
-
 ```{r}
-ggplot(datos) +
-  geom_boxplot(aes(AGE))
+datos3 <- datos
+datos3$GLUCOSE <- ifelse(datos3$GLUCOSE == 0, median(datos3$GLUCOSE), datos3$GLUCOSE)
 ```
 
-Tabla de frecuencias absolutas de pregnant
 ```{r}
-table(datos$PREGNANT)
-```
-
-Analizamos la varibale Glucosa
-```{r}
-ggplot(datos, aes(x = GLUCOSE)) + 
-  geom_histogram(aes(y = stat(density)), fill = "red", color = "black", bins = 20, alpha = 0.8) + 
-  geom_density(color = "green", size = 1.5)
-ggplot(datos) + 
-  geom_boxplot(aes(y = GLUCOSE))
-```
-
-Vemos la variable Bloodpress
-```{r}
-ggplot(datos, aes(x = BLOODPRESS)) + 
-  geom_histogram(aes(y = stat(density)), color = "black", fill = "red", bins = 20, alpha = 0.8) + 
-  geom_density(aes(BLOODPRESS), color = "green", size = 1.5)
-boxplot(datos$BLOODPRESS)
+datos4 <- datos
+datos4$GLUCOSE <- ifelse(datos4$GLUCOSE == 0, mean(datos4$GLUCOSE), datos4$GLUCOSE)
 ```
 
 
+Comprobamos mirando un modelo sencillo cual es la mejor opción:
 
-Analizamos la variable SKINTHICKNESS
+
 ```{r}
-ggplot(datos, aes(x = SKINTHICKNESS)) + 
-  geom_histogram(aes(y = stat(density)), color = "black", fill = "red", bins = 20, alpha = 0.8) +
-  geom_density(aes(SKINTHICKNESS), color = "green", size = 1.5)
-boxplot(datos$SKINTHICKNESS)
+trainIndex <- createDataPartition(datos2$DIABETES,     
+                                  p = 0.8,      
+                                  list = FALSE, 
+                                  times = 1)
+fTR2 <- datos2[trainIndex,]
+fTS2 <- datos2[-trainIndex,]
+fTR_eval2 <- fTR2
+fTS_eval2 <- fTS2
+
+ctrl <- trainControl(method = "cv",                        #k-fold cross-validation
+                     number = 10,                          #Number of folds
+                     summaryFunction = defaultSummary,     #Performance summary for comparing models in hold-out samples.
+                     classProbs = TRUE) 
+
+
+LogReg.fit2 <- train(form = DIABETES ~ GLUCOSE,
+                    data = fTR2,
+                    method = "glm",
+                    preProcess = c("center","scale"),
+                    metric = "Accuracy",
+                    trControl = ctrl)
+LogReg.fit2
+
 ```
 
 
-Vemos la variable INSULIN
 ```{r}
-ggplot(datos, aes(x = INSULIN)) + 
-  geom_histogram(aes(y = stat(density)), color = "black", fill = "red", bins = 20, alpha = 0.8) +
-  geom_density(aes(INSULIN), size = 1.5, color = "green")
-boxplot(datos$INSULIN)
+trainIndex <- createDataPartition(datos3$DIABETES,     
+                                  p = 0.8,      
+                                  list = FALSE, 
+                                  times = 1)
+fTR3 <- datos3[trainIndex,]
+fTS3 <- datos3[-trainIndex,]
+fTR_eval3 <- fTR3
+fTS_eval3 <- fTS3
+
+ctrl <- trainControl(method = "cv",                        #k-fold cross-validation
+                     number = 10,                          #Number of folds
+                     summaryFunction = defaultSummary,     #Performance summary for comparing models in hold-out samples.
+                     classProbs = TRUE) 
+
+
+LogReg.fit3 <- train(form = DIABETES ~ GLUCOSE,
+                    data = fTR3,
+                    method = "glm",
+                    preProcess = c("center","scale"),
+                    metric = "Accuracy",
+                    trControl = ctrl)
+LogReg.fit3
 ```
 
 
-Vemos la variable BODYMASSINDEX
 ```{r}
-ggplot(datos, aes(x = BODYMASSINDEX)) + 
-  geom_histogram(aes(y = stat(density)), color = "black", fill = "red", bins = 20, alpha = 0.8) +
-  geom_density(aes(BODYMASSINDEX), color = "green", size = 1.5)
+trainIndex <- createDataPartition(datos4$DIABETES,     
+                                  p = 0.8,      
+                                  list = FALSE, 
+                                  times = 1)
+fTR4 <- datos4[trainIndex,]
+fTS4 <- datos4[-trainIndex,]
+fTR_eval4 <- fTR4
+fTS_eval4 <- fTS4
+
+ctrl <- trainControl(method = "cv",                        #k-fold cross-validation
+                     number = 10,                          #Number of folds
+                     summaryFunction = defaultSummary,     #Performance summary for comparing models in hold-out samples.
+                     classProbs = TRUE) 
+
+
+LogReg.fit4 <- train(form = DIABETES ~ GLUCOSE,
+                    data = fTR4,
+                    method = "glm",
+                    preProcess = c("center","scale"),
+                    metric = "Accuracy",
+                    trControl = ctrl)
+LogReg.fit4
 ```
 
-Analizamos por último la variable PEDIGREEFUNC
+El modelo que mejor nos ha salido es en el que cambiamos los valores de 0 de la glucosa por la mediana.
+
+Veamos ahora la presión sanguinea:
+
 ```{r}
-ggplot(datos) + 
-  geom_histogram(aes(x = PEDIGREEFUNC, y = stat(density)), color = "black", fill = "red", bins = 20, alpha = 0.8) +
-  geom_density(aes(PEDIGREEFUNC), color = "green", size = 1.5)
-boxplot(datos$PEDIGREEFUNC)
+boxplot_blood <- boxplot(datos$BLOODPRESS)
+
 ```
+Volvemos a realizar lo mismo que en el caso anterior:
 
-
-
-Ahora intentamos visualizar algunas relaciones entre variables
-
-En un primer momento entre la Glucose, Bloodpress y Diabetes
 ```{r}
-ggplot(datos,aes(x = GLUCOSE , y = BLOODPRESS)) + 
-  geom_point(aes(color = DIABETES))
-```
-Ahora entre Glucosa, Insulina y Diabetes
-```{r}
-ggplot(datos,aes(x = GLUCOSE , y = INSULIN)) + 
-  geom_point(aes(color = DIABETES))
-```
-
-Glucose - BodyMassIndex y Diabetes
-```{r}
-ggplot(datos,aes(x = GLUCOSE , y = BODYMASSINDEX)) + 
-  geom_point(aes(color = DIABETES))
-```
-
-Bloodpress, BodyMassIndex y Diabetes
-```{r}
-ggplot(datos,aes(x = BLOODPRESS, y = BODYMASSINDEX)) + 
-  geom_point(aes(color = DIABETES))
+datos2 <- datos2[datos2$BLOODPRESS > 0, ]
 ```
 
 
-Dibujamos todas las variables juntas como resumen
 ```{r}
-ggpairs(datos,aes(color = DIABETES, alpha = 0.3))
-PlotDataframe(fdata = datos, 
-              output.name = "DIABETES")
+datos3$BLOODPRESS <- ifelse(datos3$BLOODPRESS == 0, median(datos3$BLOODPRESS), datos3$BLOODPRESS)
 ```
+
+```{r}
+datos4$BLOODPRESS <- ifelse(datos4$BLOODPRESS == 0, mean(datos4$BLOODPRESS), datos4$BLOODPRESS)
+```
+
+```{r}
+trainIndex <- createDataPartition(datos2$DIABETES,     
+                                  p = 0.8,      
+                                  list = FALSE, 
+                                  times = 1)
+fTR2 <- datos2[trainIndex,]
+fTS2 <- datos2[-trainIndex,]
+fTR_eval2 <- fTR2
+fTS_eval2 <- fTS2
+
+ctrl <- trainControl(method = "cv",                        #k-fold cross-validation
+                     number = 10,                          #Number of folds
+                     summaryFunction = defaultSummary,     #Performance summary for comparing models in hold-out samples.
+                     classProbs = TRUE) 
+
+
+LogReg.fit2 <- train(form = DIABETES ~ BLOODPRESS,
+                    data = fTR2,
+                    method = "glm",
+                    preProcess = c("center","scale"),
+                    metric = "Accuracy",
+                    trControl = ctrl)
+LogReg.fit2
+```
+
+
+```{r}
+trainIndex <- createDataPartition(datos3$DIABETES,     
+                                  p = 0.8,      
+                                  list = FALSE, 
+                                  times = 1)
+fTR3 <- datos3[trainIndex,]
+fTS3 <- datos3[-trainIndex,]
+fTR_eval3 <- fTR3
+fTS_eval3 <- fTS3
+
+ctrl <- trainControl(method = "cv",                        #k-fold cross-validation
+                     number = 10,                          #Number of folds
+                     summaryFunction = defaultSummary,     #Performance summary for comparing models in hold-out samples.
+                     classProbs = TRUE) 
+
+
+LogReg.fit3 <- train(form = DIABETES ~ BLOODPRESS,
+                    data = fTR3,
+                    method = "glm",
+                    preProcess = c("center","scale"),
+                    metric = "Accuracy",
+                    trControl = ctrl)
+LogReg.fit3
+```
+
+
+```{r}
+trainIndex <- createDataPartition(datos4$DIABETES,     
+                                  p = 0.8,      
+                                  list = FALSE, 
+                                  times = 1)
+fTR4 <- datos4[trainIndex,]
+fTS4 <- datos4[-trainIndex,]
+fTR_eval4 <- fTR4
+fTS_eval4 <- fTS4
+
+ctrl <- trainControl(method = "cv",                        #k-fold cross-validation
+                     number = 10,                          #Number of folds
+                     summaryFunction = defaultSummary,     #Performance summary for comparing models in hold-out samples.
+                     classProbs = TRUE) 
+
+
+LogReg.fit4 <- train(form = DIABETES ~ BLOODPRESS,
+                    data = fTR4,
+                    method = "glm",
+                    preProcess = c("center","scale"),
+                    metric = "Accuracy",
+                    trControl = ctrl)
+LogReg.fit4
+```
+
+Hacemos lo mismo con el bodymassindex:
+
+```{r}
+datos2 <- datos2[datos2$BODYMASSINDEX > 0, ]
+```
+
+
+```{r}
+datos3$BODYMASSINDEX <- ifelse(datos3$BODYMASSINDEX == 0, median(datos3$BODYMASSINDEX), datos3$BODYMASSINDEX)
+```
+
+```{r}
+datos4$BODYMASSINDEX <- ifelse(datos4$BODYMASSINDEX == 0, mean(datos4$BODYMASSINDEX), datos4$BODYMASSINDEX)
+```
+
+Y entrenamos modelos:
+
+```{r}
+trainIndex <- createDataPartition(datos2$DIABETES,     
+                                  p = 0.8,      
+                                  list = FALSE, 
+                                  times = 1)
+fTR2 <- datos2[trainIndex,]
+fTS2 <- datos2[-trainIndex,]
+fTR_eval2 <- fTR2
+fTS_eval2 <- fTS2
+
+ctrl <- trainControl(method = "cv",                        #k-fold cross-validation
+                     number = 10,                          #Number of folds
+                     summaryFunction = defaultSummary,     #Performance summary for comparing models in hold-out samples.
+                     classProbs = TRUE) 
+
+
+LogReg.fit2 <- train(form = DIABETES ~ BODYMASSINDEX,
+                    data = fTR2,
+                    method = "glm",
+                    preProcess = c("center","scale"),
+                    metric = "Accuracy",
+                    trControl = ctrl)
+LogReg.fit2
+```
+
+
+```{r}
+trainIndex <- createDataPartition(datos3$DIABETES,     
+                                  p = 0.8,      
+                                  list = FALSE, 
+                                  times = 1)
+fTR3 <- datos3[trainIndex,]
+fTS3 <- datos3[-trainIndex,]
+fTR_eval3 <- fTR3
+fTS_eval3 <- fTS3
+
+ctrl <- trainControl(method = "cv",                        #k-fold cross-validation
+                     number = 10,                          #Number of folds
+                     summaryFunction = defaultSummary,     #Performance summary for comparing models in hold-out samples.
+                     classProbs = TRUE) 
+
+
+LogReg.fit3 <- train(form = DIABETES ~ BODYMASSINDEX,
+                    data = fTR3,
+                    method = "glm",
+                    preProcess = c("center","scale"),
+                    metric = "Accuracy",
+                    trControl = ctrl)
+LogReg.fit3
+```
+
+
+```{r}
+trainIndex <- createDataPartition(datos4$DIABETES,     
+                                  p = 0.8,      
+                                  list = FALSE, 
+                                  times = 1)
+fTR4 <- datos4[trainIndex,]
+fTS4 <- datos4[-trainIndex,]
+fTR_eval4 <- fTR4
+fTS_eval4 <- fTS4
+
+ctrl <- trainControl(method = "cv",                        #k-fold cross-validation
+                     number = 10,                          #Number of folds
+                     summaryFunction = defaultSummary,     #Performance summary for comparing models in hold-out samples.
+                     classProbs = TRUE) 
+
+
+LogReg.fit4 <- train(form = DIABETES ~ BODYMASSINDEX,
+                    data = fTR4,
+                    method = "glm",
+                    preProcess = c("center","scale"),
+                    metric = "Accuracy",
+                    trControl = ctrl)
+LogReg.fit4
+```
+
+Hacemos lo mismo con el insulina, lo unico que en este caso no contemplamos eliminar los datos que son 0 ya que representan gran cantidad de nuestro dataset.
+
+```{r}
+datos3$INSULIN <- ifelse(datos3$INSULIN == 0, median(datos3$INSULIN), datos3$INSULIN)
+```
+
+```{r}
+datos4$INSULIN <- ifelse(datos4$INSULIN == 0, mean(datos4$INSULIN), datos4$INSULIN)
+```
+
+Y entrenamos modelos:
+
+
+```{r}
+trainIndex <- createDataPartition(datos3$DIABETES,     
+                                  p = 0.8,      
+                                  list = FALSE, 
+                                  times = 1)
+fTR3 <- datos3[trainIndex,]
+fTS3 <- datos3[-trainIndex,]
+fTR_eval3 <- fTR3
+fTS_eval3 <- fTS3
+
+ctrl <- trainControl(method = "cv",                        #k-fold cross-validation
+                     number = 10,                          #Number of folds
+                     summaryFunction = defaultSummary,     #Performance summary for comparing models in hold-out samples.
+                     classProbs = TRUE) 
+
+
+LogReg.fit3 <- train(form = DIABETES ~ INSULIN,
+                    data = fTR3,
+                    method = "glm",
+                    preProcess = c("center","scale"),
+                    metric = "Accuracy",
+                    trControl = ctrl)
+LogReg.fit3
+```
+
+
+```{r}
+trainIndex <- createDataPartition(datos4$DIABETES,     
+                                  p = 0.8,      
+                                  list = FALSE, 
+                                  times = 1)
+fTR4 <- datos4[trainIndex,]
+fTS4 <- datos4[-trainIndex,]
+fTR_eval4 <- fTR4
+fTS_eval4 <- fTS4
+
+ctrl <- trainControl(method = "cv",                        #k-fold cross-validation
+                     number = 10,                          #Number of folds
+                     summaryFunction = defaultSummary,     #Performance summary for comparing models in hold-out samples.
+                     classProbs = TRUE) 
+
+
+LogReg.fit4 <- train(form = DIABETES ~ INSULIN,
+                    data = fTR4,
+                    method = "glm",
+                    preProcess = c("center","scale"),
+                    metric = "Accuracy",
+                    trControl = ctrl)
+LogReg.fit4
+```
+
+
+Por último nos queda ver la variable Sthickness que era la otra que tenía datos atípicos a simple vista:
+
+```{r}
+boxplot_sthick <- boxplot(datos$SKINTHICKNESS)
+```
+
+Aunque no se vean tambien existen valores atípicos, que son erroneos, como es el caso del 0.
+
+Por tanto nos encontramos en el mismo caso:
+
+```{r}
+datos2 <- datos2[datos2$SKINTHICKNESS > 0 & datos2$SKINTHICKNESS < 90, ]
+```
+
+
+```{r}
+datos3$SKINTHICKNESS <- ifelse(datos3$SKINTHICKNESS == 0 , median(datos3$SKINTHICKNESS), datos3$SKINTHICKNESS)
+datos3$SKINTHICKNESS <- ifelse(datos3$SKINTHICKNESS > 90 , median(datos3$SKINTHICKNESS), datos3$SKINTHICKNESS)
+```
+
+```{r}
+datos4$SKINTHICKNESS <- ifelse(datos4$SKINTHICKNESS == 0, mean(datos4$SKINTHICKNESS), datos4$SKINTHICKNESS)
+datos4$SKINTHICKNESS <- ifelse(datos4$SKINTHICKNESS > 90, mean(datos4$SKINTHICKNESS), datos4$SKINTHICKNESS)
+```
+
+Y entrenamos modelos:
+
+```{r}
+trainIndex <- createDataPartition(datos2$DIABETES,     
+                                  p = 0.8,      
+                                  list = FALSE, 
+                                  times = 1)
+fTR2 <- datos2[trainIndex,]
+fTS2 <- datos2[-trainIndex,]
+fTR_eval2 <- fTR2
+fTS_eval2 <- fTS2
+
+ctrl <- trainControl(method = "cv",                        #k-fold cross-validation
+                     number = 10,                          #Number of folds
+                     summaryFunction = defaultSummary,     #Performance summary for comparing models in hold-out samples.
+                     classProbs = TRUE) 
+
+
+LogReg.fit2 <- train(form = DIABETES ~ SKINTHICKNESS,
+                    data = fTR2,
+                    method = "glm",
+                    preProcess = c("center","scale"),
+                    metric = "Accuracy",
+                    trControl = ctrl)
+LogReg.fit2
+```
+
+```{r}
+trainIndex <- createDataPartition(datos3$DIABETES,     
+                                  p = 0.8,      
+                                  list = FALSE, 
+                                  times = 1)
+fTR3 <- datos3[trainIndex,]
+fTS3 <- datos3[-trainIndex,]
+fTR_eval3 <- fTR3
+fTS_eval3 <- fTS3
+
+ctrl <- trainControl(method = "cv",                        #k-fold cross-validation
+                     number = 10,                          #Number of folds
+                     summaryFunction = defaultSummary,     #Performance summary for comparing models in hold-out samples.
+                     classProbs = TRUE) 
+
+
+LogReg.fit3 <- train(form = DIABETES ~ SKINTHICKNESS,
+                    data = fTR3,
+                    method = "glm",
+                    preProcess = c("center","scale"),
+                    metric = "Accuracy",
+                    trControl = ctrl)
+LogReg.fit3
+```
+
+
+```{r}
+trainIndex <- createDataPartition(datos4$DIABETES,     
+                                  p = 0.8,      
+                                  list = FALSE, 
+                                  times = 1)
+fTR4 <- datos4[trainIndex,]
+fTS4 <- datos4[-trainIndex,]
+fTR_eval4 <- fTR4
+fTS_eval4 <- fTS4
+
+ctrl <- trainControl(method = "cv",                        #k-fold cross-validation
+                     number = 10,                          #Number of folds
+                     summaryFunction = defaultSummary,     #Performance summary for comparing models in hold-out samples.
+                     classProbs = TRUE) 
+
+
+LogReg.fit4 <- train(form = DIABETES ~ SKINTHICKNESS,
+                    data = fTR4,
+                    method = "glm",
+                    preProcess = c("center","scale"),
+                    metric = "Accuracy",
+                    trControl = ctrl)
+LogReg.fit4
+```
+
+Hacemos todos los cambios que hemos ido deciciendo sobre el dataset original:
+
+```{r}
+datos$GLUCOSE <- ifelse(datos$GLUCOSE == 0, median(datos$GLUCOSE), datos$GLUCOSE)
+datos$BODYMASSINDEX <- ifelse(datos$BODYMASSINDEX == 0, median(datos$BODYMASSINDEX), datos$BODYMASSINDEX)
+datos$BLOODPRESS <- ifelse(datos$BLOODPRESS == 0, median(datos$BLOODPRESS), datos$BLOODPRESS)
+datos$INSULIN <- ifelse(datos$INSULIN == 0, median(datos$INSULIN), datos$INSULIN)
+datos$INSULIN <- ifelse(datos$INSULIN > 600, median(datos$INSULIN), datos$INSULIN)
+datos$SKINTHICKNESS <- ifelse(datos$SKINTHICKNESS == 0, median(datos$SKINTHICKNESS), datos$SKINTHICKNESS)
+datos$SKINTHICKNESS <- ifelse(datos$SKINTHICKNESS > 90, median(datos$SKINTHICKNESS), datos$SKINTHICKNESS)
+```
+
+Y volvemos a hacer un EDA:
+
+```{r}
+ggpairs(datos, aes(color = DIABETES))
+```
+Todo bien, todo correcto.
 
 
 # Identification and fitting process of classification models
@@ -168,113 +554,7 @@ Para comenzar con el modelo lo que haremos será dividir nuestra muestra en 2 gr
 
 
 
-```{r}
-trainIndex <- createDataPartition(datos$DIABETES,     
-                                  p = 0.8,      
-                                  list = FALSE, 
-                                  times = 1)
-fTR <- datos[trainIndex,]
-fTS <- datos[-trainIndex,]
-fTR_eval <- fTR
-fTS_eval <- fTS
 
-```
-
-
-Definimos el initialize trainControl:
-
-```{r}
-ctrl <- trainControl(method = "cv",                        #k-fold cross-validation
-                     number = 10,                          #Number of folds
-                     summaryFunction = defaultSummary,     #Performance summary for comparing models in hold-out samples.
-                     classProbs = TRUE) 
-```
-
-
-Empezamos con la regresión logística. HAY 2 formas distintas de hacerlo. Elige la que quieras. Da mejores resultados la primera
-
-```{r}
-LogReg.fit <- train(form = DIABETES ~ .,
-                    data = fTR,
-                    method = "glm",
-                    preProcess = c("center","scale"),
-                    metric = "Accuracy",
-                    trControl = ctrl)
-```
-
-```{r}
-LogReg.fit <- train( fTR[, c("PREGNANT", "GLUCOSE", "BLOODPRESS", "SKINTHICKNESS", "INSULIN", "BODYMASSINDEX", "PEDIGREEFUNC", "AGE")], 
-                       y = fTR$DIABETES,
-                       method = "glm",
-                       metric = "ROC",
-                       trControl = ctrl)
-```
-
-
-
-Observamos datos que han salido:
-```{r}
-LogReg.fit
-```
-
-```{r}
-summary(LogReg.fit)
-```
-
-Ahora evaluamos con nuestro modelo los datos: 
-
-```{r}
-fTR_eval$LRprob <- predict(LogReg.fit, type="prob", newdata = fTR) # predict probabilities
-fTR_eval$LRpred <- predict(LogReg.fit, type="raw", newdata = fTR) # predict classes 
-
-fTS_eval$LRprob <- predict(LogReg.fit, type="prob", newdata = fTS) # predict probabilities
-fTS_eval$LRpred <- predict(LogReg.fit, type="raw", newdata = fTS) # predict classes 
-```
-
-Representamos:
-
-```{r}
-Plot2DClass(fTR[,c("PREGNANT", "GLUCOSE", "BLOODPRESS", "SKINTHICKNESS", "INSULIN", "BODYMASSINDEX","PEDIGREEFUNC", "AGE")], #Input variables 
-            fTR$DIABETES,     #Output variable
-            LogReg.fit,#Fitted model with caret
-            var1 = "BODYMASSINDEX", var2 = "BLOODPRESS", #variables to represent the plot
-            selClass = "YES")     #Class output to be analyzed
-```
-
-Vamos a evaluar los resultados
-
-Primero con la matriz de confusión
-
-Training
-```{r}
-confusionMatrix(data = fTR_eval$LRpred, #Predicted classes
-                reference = fTR_eval$DIABETES, #Real observations
-                positive = "Si") #Class labeled as Positive
-```
-
-
-Test
-```{r}
-confusionMatrix(fTS_eval$LRpred, 
-                fTS_eval$DIABETES, 
-                positive = "Si")
-```
-
-Veamos las gráficas
-
-Training
-```{r}
-PlotClassPerformance(fTR_eval$DIABETES,       #Real observations
-                     fTR_eval$LRprob,  #predicted probabilities
-                     selClass = "Si") #Class to be analyzed
-```
-
-Test
-```{r}
-PlotClassPerformance(fTS_eval$DIABETES,       #Real observations
-                     fTS_eval$LRprob,  #predicted probabilities
-                     selClass = "Si") #Class to be analyzed)
-```
 
 
 
