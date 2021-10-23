@@ -15,8 +15,10 @@ Cargamos las librerias a usar:
 
 ```{r, message=FALSE,warning=FALSE}
 library(tidyverse)
+library(randomForest)
 library(caret)
 library(GGally)
+library(NeuralSens)
 library(ROCR) 
 library(corrplot)
 library(rpart)
@@ -776,7 +778,451 @@ PlotClassPerformance(fTS1_2_eval$DIABETES,
                      fTS1_2_eval$LRprob,  
                      selClass = "Si") 
 ```
+## Knn
+
+```{r}
+fTR2 <- datos_bal[trainIndex,] 
+fTS2 <- datos_bal[-trainIndex,]
+
+fTR2_eval <- fTR2
+fTS2_eval <- fTS2
+
+knn.fit = train(form = DIABETES ~ .,
+                data = fTR2,   
+                method = "knn",
+                preProcess = c("center","scale"),
+                tuneGrid = data.frame(k = seq(3,115,4)),
+                trControl = ctrl, 
+                metric = "Accuracy")
+knn.fit
+```
 
 
+```{r}
+ggplot(knn.fit)
+```
+
+```{r}
+knn.fit$finalModel
+```
+
+```{r}
+fTR2_eval$knn_prob <- predict(knn.fit, type="prob" , newdata = fTR2)
+fTR2_eval$knn_pred <- predict(knn.fit, type="raw" , newdata = fTR2)
+
+fTS2_eval$knn_prob <- predict(knn.fit, type="prob" , newdata = fTS2) 
+fTS2_eval$knn_pred <- predict(knn.fit, type="raw" , newdata = fTS2)
+```
+
+
+```{r}
+Plot2DClass(fTR2[,],
+            fTR2$DIABETES,    
+            knn.fit,
+            var1 = "GLUCOSE", var2 = "BODYMASSINDEX", 
+            selClass = "Si")     
+```
+
+```{r}
+confusionMatrix(data = fTR2_eval$knn_pred,
+                reference = fTR2_eval$DIABETES, 
+                positive = "Si")
+```
+
+
+```{r}
+confusionMatrix(fTS2_eval$knn_pred, 
+                fTS2_eval$DIABETES, 
+                positive = "Si")
+```
+
+
+```{r}
+PlotClassPerformance(fTR2_eval$DIABETES,       
+                     fTR2_eval$knn_prob,  
+                     selClass = "Si") 
+```
+
+```{r}
+PlotClassPerformance(fTS2_eval$DIABETES,       
+                     fTS2_eval$knn_prob,  
+                     selClass = "Si") 
+```
+
+## Arboles de decisión
+
+
+
+```{r}
+fTR3 <- datos_bal[trainIndex,]
+fTS3 <- datos_bal[-trainIndex,]
+
+fTR3_eval <- fTR3
+fTS3_eval <- fTS3
+
+inputs <- 1:(ncol(datos_bal)-1)
+tree.fit <- train(x = fTR3[,inputs],  
+                 y = fTR3$DIABETES,  
+                 method = "rpart", 
+                 control = rpart.control(minsplit = 10,  
+                                        minbucket = 10),
+                 parms = list(split = "gini"),
+                 tuneGrid = data.frame(cp = seq(0,0.1,0.0005)),
+                 trControl = ctrl, 
+                 metric = "Accuracy")
+tree.fit
+```
+
+```{r}
+ggplot(tree.fit)
+```
+
+```{r}
+tree.fit$finalModel
+```
+
+
+```{r}
+rpart.plot(tree.fit$finalModel, type = 2, fallen.leaves = FALSE, box.palette = "Oranges")
+```
+
+```{r}
+varImp(tree.fit,scale = FALSE)
+plot(varImp(tree.fit,scale = FALSE))
+```
+
+
+```{r}
+fTR3_eval$tree_prob <- predict(tree.fit, type="prob", newdata = fTR3) 
+fTR3_eval$tree_pred <- predict(tree.fit, type="raw", newdata = fTR3)
+
+fTS3_eval$tree_prob <- predict(tree.fit, type="prob", newdata = fTS3) 
+fTS3_eval$tree_pred <- predict(tree.fit, type="raw", newdata = fTS3)
+```
+
+
+```{r}
+Plot2DClass(fTR3[,],
+            fTR3$DIABETES,    
+            tree.fit,
+            var1 = "GLUCOSE", var2 = "BODYMASSINDEX", 
+            selClass = "Si")
+```
+
+
+```{r}
+confusionMatrix(data = fTR3_eval$tree_pred, 
+                reference = fTR3_eval$DIABETES, 
+                positive = "Si")
+```
+
+```{r}
+confusionMatrix(fTS3_eval$tree_pred, 
+                fTS3_eval$DIABETES, 
+                positive = "Si")
+```
+
+```{r}
+PlotClassPerformance(fTR3_eval$DIABETES,     
+                     fTR3_eval$tree_prob,  
+                     selClass = "Si") 
+```
+
+```{R}
+PlotClassPerformance(fTS3_eval$DIABETES,       
+                     fTS3_eval$tree_prob,  
+                     selClass = "Si")
+```
+
+Ya hemos visto las variables importantes de nuestro modelo. Hagamos a continuación otro modelo con unicamente las variables importantes.
+
+```{r}
+fTR3_2 <- datos_bal[trainIndex,]
+fTS3_2 <- datos_bal[-trainIndex,]
+
+fTR3_2_eval <- fTR3_2
+fTS3_2_eval <- fTS3_2
+
+inputs <- c(1,2,5,6,7,8)
+tree2.fit <- train(x = fTR3_2[,inputs],  
+                 y = fTR3_2$DIABETES,  
+                 method = "rpart", 
+                 control = rpart.control(minsplit = 10,  
+                                        minbucket = 15),
+                 parms = list(split = "gini"),
+                 tuneGrid = data.frame(cp = seq(0,0.1,0.0005)),
+                 trControl = ctrl, 
+                 metric = "Accuracy")
+tree2.fit
+```
+
+```{r}
+ggplot(tree2.fit)
+```
+
+```{r}
+rpart.plot(tree2.fit$finalModel, type = 2, fallen.leaves = FALSE, box.palette = "Oranges")
+```
+```{r}
+fTR3_2_eval$tree_prob <- predict(tree2.fit, type="prob", newdata = fTR3_2) 
+fTR3_2_eval$tree_pred <- predict(tree2.fit, type="raw", newdata = fTR3_2)
+
+fTS3_2_eval$tree_prob <- predict(tree2.fit, type="prob", newdata = fTS3_2) 
+fTS3_2_eval$tree_pred <- predict(tree2.fit, type="raw", newdata = fTS3_2)
+```
+
+
+```{r}
+Plot2DClass(fTR3_2[,],
+            fTR3_2$DIABETES,    
+            tree2.fit,
+            var1 = "GLUCOSE", var2 = "BODYMASSINDEX", 
+            selClass = "Si")
+```
+
+```{r}
+confusionMatrix(data = fTR3_2_eval$tree_pred, 
+                reference = fTR3_2_eval$DIABETES, 
+                positive = "Si")
+```
+
+```{r}
+confusionMatrix(data = fTS3_2_eval$tree_pred, 
+                reference = fTS3_2_eval$DIABETES, 
+                positive = "Si")
+```
+
+```{r}
+PlotClassPerformance(fTR3_2_eval$DIABETES,     
+                     fTR3_2_eval$tree_prob,  
+                     selClass = "Si") 
+```
+
+
+```{r}
+PlotClassPerformance(fTS3_2_eval$DIABETES,     
+                     fTS3_2_eval$tree_prob,  
+                     selClass = "Si") 
+```
+
+
+
+
+
+
+## SVM
+
+```{r}
+fTR4 <- datos_bal[trainIndex,]
+fTS4 <- datos_bal[-trainIndex,]
+
+fTR4_eval <- fTR4
+fTS4_eval <- fTS4
+
+svm.fit <- train(form = DIABETES ~ ., 
+                data = fTR4,   
+                method = "svmLinear", 
+                preProcess = c("center","scale"),
+                tuneGrid = data.frame(C = seq(0.1,10,1)),
+                trControl = ctrl, 
+                metric = "Accuracy")
+svm.fit
+```
+
+```{r}
+ggplot(svm.fit) + scale_x_log10()
+```
+
+```{r}
+svm.fit$finalModel
+```
+
+```{r}
+fTR4_eval$svm_prob <- predict(svm.fit, type="prob", newdata = fTR4) 
+fTR4_eval$svm_pred <- predict(svm.fit, type="raw", newdata = fTR4) 
+
+fTS4_eval$svm_prob <- predict(svm.fit, type="prob", newdata = fTS4) 
+fTS4_eval$svm_pred <- predict(svm.fit, type="raw", newdata = fTS4)  
+```
+
+```{r}
+Plot2DClass(fTR4[,], 
+            fTR4$DIABETES,     
+            svm.fit,
+            var1 = "GLUCOSE", var2 = "BODYMASSINDEX", 
+            selClass = "Si")     
+```
+
+```{r}
+confusionMatrix(data = fTR4_eval$svm_pred, 
+                reference = fTR4_eval$DIABETES, 
+                positive = "Si") 
+```
+
+```{r}
+confusionMatrix(fTS4_eval$svm_pred, 
+                fTS4_eval$DIABETES, 
+                positive = "Si")
+```
+
+
+
+## Redes Neuronales
+
+```{r}
+fTR5 <- datos_bal[trainIndex,]
+fTS5 <- datos_bal[-trainIndex,]
+
+fTR5_eval = fTR5
+fTS5_eval = fTS5
+
+mlp.fit = train(form = DIABETES ~ .,
+                data = fTR5,  
+                method = "nnet",
+                preProcess = c("center","scale"),
+                maxit = 250,   
+                
+                tuneGrid = expand.grid(size = seq(5,15,length.out = 11),
+                                       decay=c(10^(-9),0.0001,0.001,0.01,0.1,1)), 
+                trControl = ctrl, 
+                metric = "Accuracy")
+
+mlp.fit
+```
+
+
+```{r}
+ggplot(mlp.fit)+scale_x_log10()
+```
+```{r}
+mlp.fit$finalModel
+plotnet(mlp.fit$finalModel)
+```
+```{r}
+SensAnalysisMLP(mlp.fit) 
+```
+
+
+```{r}
+fTR5_eval$mlp_prob = predict(mlp.fit, type="prob" , newdata = fTR5)
+fTR5_eval$mlp_pred = predict(mlp.fit, type="raw" , newdata = fTR5) 
+
+fTS5_eval$mlp_prob = predict(mlp.fit, type="prob" , newdata = fTS5) 
+fTS5_eval$mlp_pred = predict(mlp.fit, type="raw" , newdata = fTS5) 
+```
+
+
+```{r}
+Plot2DClass(fTR5[,],
+            fTR5$DIABETES,     
+            mlp.fit,
+            var1="GLUCOSE", var2="BODYMASSINDEX",
+            selClass = "Si")  
+```
+
+
+```{r}
+confusionMatrix(data = fTR5_eval$mlp_pred, 
+                reference = fTR5_eval$DIABETES, 
+                positive = "Si") 
+```
+
+
+```{r}
+confusionMatrix(fTS5_eval$mlp_pred, 
+                fTS5_eval$DIABETES, 
+                positive = "Si")
+```
+
+
+```{r}
+PlotClassPerformance(fTR5_eval$DIABETES,
+                     fTR5_eval$mlp_prob, 
+                     selClass = "Si") 
+```
+
+```{r}
+PlotClassPerformance(fTS5_eval$DIABETES,      
+                     fTS5_eval$mlp_prob, 
+                     selClass = "Si")
+```
+
+
+
+Hacemos otro con las variables más importantes:
+
+
+```{r}
+fTR5_2 <- datos_bal[trainIndex,]
+fTS5_2 <- datos_bal[-trainIndex,]
+
+fTR5_2_eval = fTR5_2
+fTS5_2_eval = fTS5_2
+
+mlp2.fit = train(form = DIABETES ~ (BODYMASSINDEX)^2 + BODYMASSINDEX + AGE + SKINTHICKNESS + GLUCOSE + BLOODPRESS ,
+                data = fTR5_2,  
+                method = "nnet",
+                preProcess = c("center","scale"),
+                maxit = 250,   
+                
+                tuneGrid = expand.grid(size = seq(5,25,length.out = 11),
+                                       decay=c(10^(-9),0.0001,0.001,0.01)), 
+                trControl = ctrl, 
+                metric = "Accuracy")
+
+mlp2.fit
+```
+
+```{r}
+ggplot(mlp2.fit)+scale_x_log10()
+```
+
+```{r}
+fTR5_2_eval$mlp_prob = predict(mlp2.fit, type="prob" , newdata = fTR5_2)
+fTR5_2_eval$mlp_pred = predict(mlp2.fit, type="raw" , newdata = fTR5_2) 
+
+fTS5_2_eval$mlp_prob = predict(mlp2.fit, type="prob" , newdata = fTS5_2) 
+fTS5_2_eval$mlp_pred = predict(mlp2.fit, type="raw" , newdata = fTS5_2) 
+```
+
+
+```{r}
+Plot2DClass(fTR5_2[,],
+            fTR5_2$DIABETES,     
+            mlp2.fit,
+            var1="GLUCOSE", var2="BODYMASSINDEX",
+            selClass = "Si")  
+```
+
+```{r}
+confusionMatrix(data = fTR5_2_eval$mlp_pred, 
+                reference = fTR5_2_eval$DIABETES, 
+                positive = "Si") 
+```
+
+
+```{r}
+confusionMatrix(data = fTS5_2_eval$mlp_pred, 
+                reference = fTS5_2_eval$DIABETES, 
+                positive = "Si") 
+```
+
+```{r}
+PlotClassPerformance(fTR5_2_eval$DIABETES,
+                     fTR5_2_eval$mlp_prob, 
+                     selClass = "Si") 
+```
+
+
+
+```{r}
+PlotClassPerformance(fTS5_2_eval$DIABETES,
+                     fTS5_2_eval$mlp_prob, 
+                     selClass = "Si") 
+```
+
+
+
+## Random Forest
 
 
