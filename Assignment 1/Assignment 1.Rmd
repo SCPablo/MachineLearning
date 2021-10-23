@@ -9,16 +9,22 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# Preprocesamiento: Carga datos y librerias
+# Step 1: Import the data-set
 
 Cargamos las librerias a usar:
 
 ```{r, message=FALSE,warning=FALSE}
 library(tidyverse)
-library(GGally)
-library(MLTools)
 library(caret)
-library(ROCR)
+library(GGally)
+library(ROCR) 
+library(corrplot)
+library(rpart)
+library(rpart.plot)
+library(partykit)
+library(NeuralNetTools) 
+library(nnet)
+library(ROSE)
 ```
 
 Cargamos los datos:
@@ -27,20 +33,7 @@ Cargamos los datos:
 datos <- read.table("./data/Diabetes.csv", sep = ";", header = TRUE)
 ```
 
-
-
-
-# Análisis Exploratorio
-
-
-Resumen general del datasets
-```{r}
-str(datos)
-summary(datos)
-```
-
-Realizamos algunos cambios en el dataset
-```{r}
+```{r include=FALSE}
 datos <- datos %>%
   mutate(DIABETES = ifelse(DIABETES == 1, "Si", "No"))
 datos <- datos %>%
@@ -48,15 +41,32 @@ datos <- datos %>%
 str(datos)
 ```
 
-Vemos que no hay datos nulos y por lo tanto trabajaremos con todas las filas que hemos cargado
 
-Antes de iniciar con todos los gráficos veamos una representación de todos con todos:
+# Step 2: Check out the missing values
+
+Resumen general del dataset:
+
+```{r}
+str(datos)
+```
+
+```{r}
+summary(datos)
+```
+
+No tenemos ningún NA. 
+
+
+
+# Step 3: Plot the data and check out for outliers.
+
+Veamos a grandes rasgos una representación de las variables:
 
 ```{r message=FALSE, warning=FALSE}
 ggpairs(datos, aes(color = DIABETES))
 ```
 
-Da la sensación de existir bastantes valores atipicos, veamoslo:
+Da la sensación de existir bastantes valores atípicos, veamoslo:
 
 ```{r}
 boxplot_glucosa <- boxplot(datos$GLUCOSE)
@@ -112,10 +122,7 @@ LogReg.fit2
 
 
 ```{r}
-trainIndex <- createDataPartition(datos3$DIABETES,     
-                                  p = 0.8,      
-                                  list = FALSE, 
-                                  times = 1)
+
 fTR3 <- datos3[trainIndex,]
 fTS3 <- datos3[-trainIndex,]
 fTR_eval3 <- fTR3
@@ -138,10 +145,7 @@ LogReg.fit3
 
 
 ```{r}
-trainIndex <- createDataPartition(datos4$DIABETES,     
-                                  p = 0.8,      
-                                  list = FALSE, 
-                                  times = 1)
+
 fTR4 <- datos4[trainIndex,]
 fTS4 <- datos4[-trainIndex,]
 fTR_eval4 <- fTR4
@@ -213,10 +217,7 @@ LogReg.fit2
 
 
 ```{r}
-trainIndex <- createDataPartition(datos3$DIABETES,     
-                                  p = 0.8,      
-                                  list = FALSE, 
-                                  times = 1)
+
 fTR3 <- datos3[trainIndex,]
 fTS3 <- datos3[-trainIndex,]
 fTR_eval3 <- fTR3
@@ -239,10 +240,7 @@ LogReg.fit3
 
 
 ```{r}
-trainIndex <- createDataPartition(datos4$DIABETES,     
-                                  p = 0.8,      
-                                  list = FALSE, 
-                                  times = 1)
+
 fTR4 <- datos4[trainIndex,]
 fTS4 <- datos4[-trainIndex,]
 fTR_eval4 <- fTR4
@@ -317,10 +315,7 @@ LogReg.fit2
 
 
 ```{r}
-trainIndex <- createDataPartition(datos3$DIABETES,     
-                                  p = 0.8,      
-                                  list = FALSE, 
-                                  times = 1)
+
 fTR3 <- datos3[trainIndex,]
 fTS3 <- datos3[-trainIndex,]
 fTR_eval3 <- fTR3
@@ -343,10 +338,7 @@ LogReg.fit3
 
 
 ```{r}
-trainIndex <- createDataPartition(datos4$DIABETES,     
-                                  p = 0.8,      
-                                  list = FALSE, 
-                                  times = 1)
+
 fTR4 <- datos4[trainIndex,]
 fTS4 <- datos4[-trainIndex,]
 fTR_eval4 <- fTR4
@@ -366,6 +358,7 @@ LogReg.fit4 <- train(form = DIABETES ~ BODYMASSINDEX,
                     trControl = ctrl)
 LogReg.fit4
 ```
+
 El que mejor resultaods produce es cambiar los valores de 0 por la mediana.
 
 
@@ -413,10 +406,7 @@ LogReg.fit3
 
 
 ```{r}
-trainIndex <- createDataPartition(datos4$DIABETES,     
-                                  p = 0.8,      
-                                  list = FALSE, 
-                                  times = 1)
+
 fTR4 <- datos4[trainIndex,]
 fTS4 <- datos4[-trainIndex,]
 fTR_eval4 <- fTR4
@@ -494,10 +484,7 @@ LogReg.fit2
 ```
 
 ```{r}
-trainIndex <- createDataPartition(datos3$DIABETES,     
-                                  p = 0.8,      
-                                  list = FALSE, 
-                                  times = 1)
+
 fTR3 <- datos3[trainIndex,]
 fTS3 <- datos3[-trainIndex,]
 fTR_eval3 <- fTR3
@@ -520,10 +507,7 @@ LogReg.fit3
 
 
 ```{r}
-trainIndex <- createDataPartition(datos4$DIABETES,     
-                                  p = 0.8,      
-                                  list = FALSE, 
-                                  times = 1)
+
 fTR4 <- datos4[trainIndex,]
 fTS4 <- datos4[-trainIndex,]
 fTR_eval4 <- fTR4
@@ -543,8 +527,7 @@ LogReg.fit4 <- train(form = DIABETES ~ SKINTHICKNESS,
                     trControl = ctrl)
 LogReg.fit4
 ```
-Lo que mejor funciona es cambiar los outliers por la mediana
-
+Lo que mejor funciona es cambiar los outliers por la mediana.
 
 Hacemos todos los cambios que hemos ido deciciendo sobre el dataset original:
 
@@ -567,21 +550,232 @@ ggpairs(datos, aes(color = DIABETES))
 Todo bien, todo correcto.
 
 
+
+
+# Step 4: Encode the categorical variables.
+
+En el step anterior gracias a **str** hemos observado que nuestra variable de salida esta como un entero y nosotros la necesitamos como un factor. Como la variables toma solo el 0 y 1 y dichos valores no son correctos para los diferentes niveles dentro de un factor vamos a cambiar el nombre por "Si" y "No" y posteriormente lo pasamos a factor. 
+
+A pesar de que deberia estar en esta parte dicho cambio lo hemos hecho al principio del documento por conveniencia grupal.
+
+
+
+# Step 5 : Analyze the continuous variables.
+
+```{r}
+ggpairs(datos, aes(col = DIABETES))
+```
+
+Vemos que las escalas son muy diferentes, por ello tendremos que hacer una estandarización. Pero esta se implementará cuando nos pongamos a trabajar con los modelos.
+
+# Step 6 : Check out for Class Imbalances.
+
+Veamos como se reparten los valores en nuestra variable de salida:
+
+```{r}
+table(datos$DIABETES)
+```
+
+Es obvio que nuestra clase esta desbalanceada pero miremos un modelo sencillo como la regresión logistica para ver si nos mide bien la salida de Si.
+
+```{r}
+trainIndex_Bal <- createDataPartition(datos$DIABETES,     
+                                  p = 0.8,      
+                                  list = FALSE, 
+                                  times = 1)
+fTR_bal <- datos[trainIndex_Bal,]
+fTS_bal <- datos[-trainIndex_Bal,]
+fTR_eval_bal <- fTR_bal
+fTS_eval_bal <- fTS_bal
+
+ctrl <- trainControl(method = "cv",                        #k-fold cross-validation
+                     number = 10,                          #Number of folds
+                     summaryFunction = defaultSummary,    
+                     classProbs = TRUE) 
+
+
+LogReg_bal.fit <- train(form = DIABETES ~ .,
+                    data = fTR_bal,
+                    method = "glm",
+                    preProcess = c("center","scale"),
+                    metric = "Accuracy",
+                    trControl = ctrl)
+
+fTR_eval_bal$LRprob <- predict(LogReg_bal.fit, type="prob", newdata = fTR_bal) # predict probabilities
+fTR_eval_bal$LRpred <- predict(LogReg_bal.fit, type="raw", newdata = fTR_bal) # predict classes 
+#test
+fTS_eval_bal$LRprob <- predict(LogReg_bal.fit, type="prob", newdata = fTS_bal) # predict probabilities
+fTS_eval_bal$LRpred <- predict(LogReg_bal.fit, type="raw", newdata = fTS_bal) # predict classes
+```
+
+```{r}
+confusionMatrix(data = fTR_eval_bal$LRpred, #Predicted classes
+                reference = fTR_eval_bal$DIABETES, #Real observations
+                positive = "Si") #Class labeled as Positive
+
+confusionMatrix(fTS_eval_bal$LRpred, 
+                fTS_eval_bal$DIABETES, 
+                positive = "Si")
+```
+
+La capacidad de modelar bien los datos de la clase más pequeña no es del todo buena, por lo que hemos decidido balancear los datos. Para ello usaremos la libreria de R **ROSE**.
+
+```{r}
+datos_bal <- ovun.sample(DIABETES ~ ., 
+                             data = datos, 
+                             method = "over", 
+                             N = table(datos$DIABETES)[1]*2)$data
+table(datos_bal$DIABETES)
+```
+
+
+
+# Step 7: Split the data-set into Training, Validation and Test Sets.
+
+A continuación definiremos los parametros de control asi como tambien dividiremos el data-set en varios conjuntos.
+
+```{r}
+ctrl <- trainControl(method = "cv",number = 10, summaryFunction = defaultSummary, classProbs = TRUE) 
+```
+
+```{r}
+trainIndex <- createDataPartition(datos_bal$DIABETES, p = 0.8, list = FALSE, times = 1)
+```
+
+
+
 # Identification and fitting process of classification models
 
 Lo primero que hacemos antes de realizar ningún modelo será informarnos acerca del tema, con la finalidad de conocer cuales son las variables que más afectan a la diabetes.
 
 Tras leer numerosos articulos podemos llegar a la conclusion que las variables que mas afectan a nuestra variable respuesta son tener obesidad, edad, presión arterial alta, antecedentes familiares y altos niveles de glucosa. 
 
-Para comenzar con el modelo lo que haremos será dividir nuestra muestra en 2 grupos, el de entrenamiento y el de test. La proporción con la que trabajaremos será de un 80-20.
+Comenzamos con los diferentes modelos:
+
+## Regresión Logística
+
+Primero hacemos uno general para ver como se comportan las variables:
+
+```{r}
+fTR1 <- datos_bal[trainIndex,] 
+fTS1 <- datos_bal[-trainIndex,]
+
+fTR1_eval <- fTR1
+fTS1_eval <- fTS1
+
+LogReg.fit <- train(form = DIABETES ~  ., data = fTR1, method = "glm",
+            preProcess = c("center","scale"), trControl = ctrl,metric = "Accuracy")    
+
+LogReg.fit
+```
 
 
+```{r}
+summary(LogReg.fit)
+```
+
+```{r}
+fTR1_eval$LRprob <- predict(LogReg.fit, type="prob", newdata = fTR1) 
+fTR1_eval$LRpred <- predict(LogReg.fit, type="raw", newdata = fTR1) 
+
+fTS1_eval$LRprob <- predict(LogReg.fit, type="prob", newdata = fTS1) 
+fTS1_eval$LRpred <- predict(LogReg.fit, type="raw", newdata = fTS1) 
+```
 
 
+```{r}
+Plot2DClass(fTR1[,], 
+            fTR1$DIABETES,    
+            LogReg.fit,
+            var1 = "GLUCOSE", var2 = "BLOODPRESS", 
+            selClass = "Si")     
+```
+
+```{r}
+confusionMatrix(data = fTR1_eval$LRpred, 
+                reference = fTR1_eval$DIABETES, 
+                positive = "Si") 
+```
+
+```{r}
+confusionMatrix(fTS1_eval$LRpred, 
+                fTS1_eval$DIABETES, 
+                positive = "Si")
+```
+
+```{r}
+PlotClassPerformance(fTR1_eval$DIABETES,       #Real observations
+                     fTR1_eval$LRprob,  #predicted probabilities
+                     selClass = "Si") #Class to be analyzed
+```
+
+```{r}
+
+PlotClassPerformance(fTS1_eval$DIABETES,       #Real observations
+                     fTS1_eval$LRprob,  #predicted probabilities
+                     selClass = "Si") #Class to be analyzed)
+```
+Tras este primer modelo lo que podemos hacer es un segundo modelo pero solo teniendo en cuenta a las variables importantes:
+
+```{r}
+fTR1_2 <- datos_bal[trainIndex,] 
+fTS1_2 <- datos_bal[-trainIndex,]
+
+fTR1_2_eval <- fTR1_2
+fTS1_2_eval <- fTS1_2
+
+LogReg2.fit <- train(form = DIABETES ~ PREGNANT + BODYMASSINDEX + GLUCOSE + PEDIGREEFUNC , data = fTR1_2, 
+              method = "glm", preProcess = c("center","scale"), trControl = ctrl,metric = "Accuracy")    
+
+LogReg2.fit
+```
+
+```{r}
+summary(LogReg2.fit)
+```
+
+```{r}
+fTR1_2_eval$LRprob <- predict(LogReg2.fit, type="prob", newdata = fTR1_2) 
+fTR1_2_eval$LRpred <- predict(LogReg2.fit, type="raw", newdata = fTR1_2) 
+
+fTS1_2_eval$LRprob <- predict(LogReg2.fit, type="prob", newdata = fTS1_2) 
+fTS1_2_eval$LRpred <- predict(LogReg2.fit, type="raw", newdata = fTS1_2) 
+```
 
 
+```{r}
+Plot2DClass(fTR1_2[,c(1,2,6,7)], 
+            fTR1_2$DIABETES,    
+            LogReg2.fit,
+            var1 = "GLUCOSE", var2 = "BODYMASSINDEX", 
+            selClass = "Si")     
+```
+
+```{r}
+confusionMatrix(data = fTR1_2_eval$LRpred, 
+                reference = fTR1_2_eval$DIABETES, 
+                positive = "Si") 
+```
 
 
+```{r}
+confusionMatrix(data = fTS1_2_eval$LRpred, 
+                reference = fTS1_2_eval$DIABETES, 
+                positive = "Si") 
+```
+
+
+```{r}
+PlotClassPerformance(fTR1_2_eval$DIABETES,       
+                     fTR1_2_eval$LRprob,  
+                     selClass = "Si") 
+```
+
+```{r}
+PlotClassPerformance(fTS1_2_eval$DIABETES,      
+                     fTS1_2_eval$LRprob,  
+                     selClass = "Si") 
+```
 
 
 
