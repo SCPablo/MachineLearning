@@ -15,6 +15,7 @@ Cargamos las librerias a usar:
 
 ```{r, message=FALSE,warning=FALSE}
 library(tidyverse)
+library(MLTools)
 library(randomForest)
 library(caret)
 library(GGally)
@@ -1094,10 +1095,14 @@ mlp.fit
 ```{r}
 ggplot(mlp.fit)+scale_x_log10()
 ```
+
+
 ```{r}
 mlp.fit$finalModel
 plotnet(mlp.fit$finalModel)
 ```
+
+
 ```{r}
 SensAnalysisMLP(mlp.fit) 
 ```
@@ -1224,5 +1229,65 @@ PlotClassPerformance(fTS5_2_eval$DIABETES,
 
 
 ## Random Forest
+
+```{r}
+fTR6 <- datos_bal[trainIndex,]
+fTS6 <- datos_bal[-trainIndex,]
+
+fTR6_eval = fTR6
+fTS6_eval = fTS6
+
+rf.fit = train(form = DIABETES ~ .,
+                data = fTR6,  
+                method = "rf",
+                preProcess = c("center","scale"),
+                tunegrid = expand.grid(.mtry = (1:15)) , 
+                trControl = ctrl, 
+                metric = "Accuracy")
+
+rf.fit
+```
+
+```{r}
+rf.fit$finalModel
+```
+
+```{r}
+fTR6_eval$rf_prob = predict(rf.fit, type="prob" , newdata = fTR6)
+fTR6_eval$rf_pred = predict(rf.fit, type="raw" , newdata = fTR6) 
+
+fTS6_eval$rf_prob = predict(rf.fit, type="prob" , newdata = fTS6) 
+fTS6_eval$rf_pred = predict(rf.fit, type="raw" , newdata = fTS6) 
+```
+
+
+```{r}
+confusionMatrix(data = fTR6_eval$rf_pred, 
+                reference = fTR6_eval$DIABETES, 
+                positive = "Si") 
+```
+
+
+```{r}
+confusionMatrix(data = fTS6_eval$rf_pred, 
+                reference = fTS6_eval$DIABETES, 
+                positive = "Si") 
+```
+
+## Comparativa de modelos
+
+```{r}
+transformResults <- resamples(list(lr = LogReg.fit, lr2 = LogReg2.fit, knn = knn.fit, tree = tree.fit, tree2 = tree2.fit, svm = svm.fit, mlp = mlp.fit, mlp2 = mlp2.fit, rf = rf.fit ))
+summary(transformResults)
+dotplot(transformResults)
+```
+
+
+
+
+
+
+
+
 
 
