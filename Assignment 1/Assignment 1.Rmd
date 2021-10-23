@@ -168,6 +168,7 @@ Veamos ahora la presión sanguinea:
 
 ```{r}
 boxplot_blood <- boxplot(datos$BLOODPRESS)
+boxplot_blood$out
 
 ```
 Volvemos a realizar lo mismo que en el caso anterior:
@@ -262,6 +263,16 @@ LogReg.fit4 <- train(form = DIABETES ~ BLOODPRESS,
 LogReg.fit4
 ```
 
+El modelo que mejor resultado proporciona es cambiar los valores 0 por la media.
+
+
+Veamos ahora el bodymassindex:
+
+```{r}
+boxplot_bodymass <- boxplot(datos$BODYMASSINDEX)
+boxplot_bodymass$out
+
+```
 Hacemos lo mismo con el bodymassindex:
 
 ```{r}
@@ -355,8 +366,16 @@ LogReg.fit4 <- train(form = DIABETES ~ BODYMASSINDEX,
                     trControl = ctrl)
 LogReg.fit4
 ```
+El que mejor resultaods produce es cambiar los valores de 0 por la mediana.
+
+
 
 Hacemos lo mismo con el insulina, lo unico que en este caso no contemplamos eliminar los datos que son 0 ya que representan gran cantidad de nuestro dataset.
+
+```{r}
+boxplot_insulin <- boxplot(datos$INSULIN)
+boxplot_insulin$out
+```
 
 ```{r}
 datos3$INSULIN <- ifelse(datos3$INSULIN == 0, median(datos3$INSULIN), datos3$INSULIN)
@@ -367,8 +386,6 @@ datos4$INSULIN <- ifelse(datos4$INSULIN == 0, mean(datos4$INSULIN), datos4$INSUL
 ```
 
 Y entrenamos modelos:
-
-
 ```{r}
 trainIndex <- createDataPartition(datos3$DIABETES,     
                                   p = 0.8,      
@@ -419,12 +436,15 @@ LogReg.fit4 <- train(form = DIABETES ~ INSULIN,
                     trControl = ctrl)
 LogReg.fit4
 ```
+Lo que mejor funciona es cambiar los 0 por la media
+
 
 
 Por último nos queda ver la variable Sthickness que era la otra que tenía datos atípicos a simple vista:
 
 ```{r}
 boxplot_sthick <- boxplot(datos$SKINTHICKNESS)
+boxplot_sthick$out
 ```
 
 Aunque no se vean tambien existen valores atípicos, que son erroneos, como es el caso del 0.
@@ -523,15 +543,18 @@ LogReg.fit4 <- train(form = DIABETES ~ SKINTHICKNESS,
                     trControl = ctrl)
 LogReg.fit4
 ```
+Lo que mejor funciona es cambiar los outliers por la mediana
+
 
 Hacemos todos los cambios que hemos ido deciciendo sobre el dataset original:
 
 ```{r}
 datos$GLUCOSE <- ifelse(datos$GLUCOSE == 0, median(datos$GLUCOSE), datos$GLUCOSE)
+datos$BODYMASSINDEX <- ifelse(datos$BODYMASSINDEX == 0, mean(datos$BODYMASSINDEX), datos$BODYMASSINDEX)
+datos$BLOODPRESS <- ifelse(datos$BLOODPRESS == 0, mean(datos$BLOODPRESS), datos$BLOODPRESS)
 datos$BODYMASSINDEX <- ifelse(datos$BODYMASSINDEX == 0, median(datos$BODYMASSINDEX), datos$BODYMASSINDEX)
-datos$BLOODPRESS <- ifelse(datos$BLOODPRESS == 0, median(datos$BLOODPRESS), datos$BLOODPRESS)
-datos$INSULIN <- ifelse(datos$INSULIN == 0, median(datos$INSULIN), datos$INSULIN)
-datos$INSULIN <- ifelse(datos$INSULIN > 600, median(datos$INSULIN), datos$INSULIN)
+datos$INSULIN <- ifelse(datos$INSULIN == 0, mean(datos$INSULIN), datos$INSULIN)
+datos$INSULIN <- ifelse(datos$INSULIN > 600, mean(datos$INSULIN), datos$INSULIN)
 datos$SKINTHICKNESS <- ifelse(datos$SKINTHICKNESS == 0, median(datos$SKINTHICKNESS), datos$SKINTHICKNESS)
 datos$SKINTHICKNESS <- ifelse(datos$SKINTHICKNESS > 90, median(datos$SKINTHICKNESS), datos$SKINTHICKNESS)
 ```
