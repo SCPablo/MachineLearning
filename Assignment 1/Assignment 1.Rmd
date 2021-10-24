@@ -1066,6 +1066,81 @@ confusionMatrix(fTS4_eval$svm_pred,
                 positive = "Si")
 ```
 
+Ahora veamos un svm con metodo svmcircular.
+
+```{r}
+fTR4_2 <- datos_bal[trainIndex,]
+fTS4_2 <- datos_bal[-trainIndex,]
+
+fTR4_2_eval <- fTR4_2
+fTS4_2_eval <- fTS4_2
+
+svm2.fit <- train(form = DIABETES ~ ., 
+                data = fTR4_2,   
+                method = "svmRadial", 
+                preProcess = c("center","scale"),
+                tuneGrid = expand.grid(C = seq(0.1,1000,length.out = 8), 
+                                       sigma=seq(0.01,50,length.out = 4)),            
+                trControl = ctrl, 
+                metric = "Accuracy")
+svm2.fit
+```
+
+
+```{r}
+ggplot(svm2.fit) + scale_x_log10()
+```
+
+```{r}
+svm2.fit$finalModel
+```
+
+```{r}
+fTR4_2_eval$svm_prob <- predict(svm2.fit, type="prob", newdata = fTR4_2) 
+fTR4_2_eval$svm_pred <- predict(svm2.fit, type="raw", newdata = fTR4_2) 
+
+fTS4_2_eval$svm_prob <- predict(svm2.fit, type="prob", newdata = fTS4_2) 
+fTS4_2_eval$svm_pred <- predict(svm2.fit, type="raw", newdata = fTS4_2)  
+```
+
+```{r}
+Plot2DClass(fTR4_2[,], 
+            fTR4_2$DIABETES,     
+            svm2.fit,
+            var1 = "GLUCOSE", var2 = "BODYMASSINDEX", 
+            selClass = "Si")     
+```
+```{r}
+Plot2DClass(fTS4_2[,], 
+            fTS4_2$DIABETES,     
+            svm2.fit,
+            var1 = "GLUCOSE", var2 = "BODYMASSINDEX", 
+            selClass = "Si")     
+```
+
+
+
+
+
+```{r}
+confusionMatrix(fTR4_2_eval$svm_pred, 
+                fTR4_2_eval$DIABETES, 
+                positive = "Si")
+```
+
+
+
+```{r}
+confusionMatrix(fTS4_2_eval$svm_pred, 
+                fTS4_2_eval$DIABETES, 
+                positive = "Si")
+```
+
+
+
+
+
+
 
 
 ## Redes Neuronales
@@ -1277,11 +1352,27 @@ confusionMatrix(data = fTS6_eval$rf_pred,
 ## Comparativa de modelos
 
 ```{r}
-transformResults <- resamples(list(lr = LogReg.fit, lr2 = LogReg2.fit, knn = knn.fit, tree = tree.fit, tree2 = tree2.fit, svm = svm.fit, mlp = mlp.fit, mlp2 = mlp2.fit, rf = rf.fit ))
+transformResults <- resamples(list(lr = LogReg.fit, lr2 = LogReg2.fit, knn = knn.fit, tree = tree.fit, tree2 = tree2.fit, svm = svm.fit, svm2 = svm2.fit, mlp = mlp.fit, mlp2 = mlp2.fit, rf = rf.fit ))
 summary(transformResults)
 dotplot(transformResults)
 ```
 
+
+
+```{r}
+#Testaccuracy
+LR1 <- confusionMatrix(fTS1_eval$LRpred, fTS1_eval$DIABETES, positive = "Si")$overall[1]
+LR2 <- confusionMatrix(fTS1_2_eval$LRpred, fTS1_2_eval$DIABETES, positive = "Si")$overall[1]
+KNN <- confusionMatrix(fTS2_eval$knn_pred, fTS2_eval$DIABETES, positive = "Si")$overall[1]
+TREE1 <- confusionMatrix(fTS3_eval$tree_pred, fTS3_eval$DIABETES, positive = "Si")$overall[1]
+TREE2 <- confusionMatrix(fTS3_2_eval$tree_pred, fTS3_2_eval$DIABETES, positive = "Si")$overall[1]
+SVM1 <- confusionMatrix(fTS4_eval$svm_pred, fTS4_eval$DIABETES, positive = "Si")$overall[1]
+SVM2 <- confusionMatrix(fTS4_2_eval$svm_pred, fTS4_2_eval$DIABETES, positive = "Si")$overall[1]
+MLP1 <- confusionMatrix(fTS5_eval$mlp_pred, fTS5_eval$DIABETES, positive = "Si")$overall[1]
+MLP2 <- confusionMatrix(fTS5_2_eval$mlp_pred, fTS5_2_eval$DIABETES, positive = "Si")$overall[1]
+RF <- confusionMatrix(fTS6_eval$rf_pred, fTS6_eval$DIABETES, positive = "Si")$overall[1]
+dotchart(c(LR1, LR2, KNN, TREE1, TREE2, SVM1, SVM2, MLP1, MLP2, RF), c("LogReg1", "LogReg2", "Knn", "Tree Decision 1", "Tree Decision 2", "Vector Linear", "Vector Radial", "Neural Network 1", "Neural Network 2", "Random Forest"), bg = "black", main = "Test Accuracy")
+```
 
 
 
