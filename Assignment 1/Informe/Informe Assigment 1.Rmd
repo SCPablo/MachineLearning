@@ -90,17 +90,192 @@ Tras entrenar el modelo obtenemos un accuracy de 0.76 con un valor de kappa de 0
 
 # KNN
 
+El modelo KNN se basa en comparar cada uno de los datos con un número k de vecinos más cercanos. Para este modelo se necesita el hiperparámetro k, que indica el número de vecinos cercanos que se utilizan en la comparación. Para obtener el k más óptimo se realiza un barrido con diferentes k hasta obtener los resultados más óptimos.
+
+En la siguiente figura se puede observar el barrido del parámetro k. 
+\begin{figure}[htb]
+\centering
+\includegraphics[width=100mm]{kNN k.png}
+\caption{Valores de diferentes k}
+\end{figure}
+
+Se puede observar que el valor de accurancy más alto se obtiene cuando el k=2. También podemos observar que el valor de k más alto que hemos probado es 40, porque se ve claramente que el accurancy tiene una línea descendente cuanto más alto es el k. Que el valor seccionado sea $k=2$ puede ocasionar un sobre entrenamiento y por ello vemos también el valor Kappa que en este caso es $Kappa=0.5225$.
+
+Evaluando los resultados más de cerca, tenemos la matriz de confusión:
+\begin{table}[htb]
+\centering
+\begin{tabular}{|l|l|l|}
+\hline
+   & \multicolumn{1}{c|}{No} & \multicolumn{1}{c|}{Sí} \\   \hline
+No & 62                     & 19                     \\   \hline
+Sí & 38                     & 81                    \\   \hline
+\end{tabular}
+\caption{Matriz confusión kNN}
+\end{table}
+
+
+Además de esta matriz, vamos a utilizar el indicador de la curva ROC. A continuación vemos la gráfica de la curva ROC para el conjunto de test.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=60mm]{ROC KNN Test.png}
+\caption{ROC KNN Test}
+\end{figure}
+
+El área bajo la curva tiene un valor de 0.81145 lo que es aceptable.
+
+
 # Árboles de decisión 
+
+El modelo de árboles de decisión sigue un consiste en realizar divisiones recursivas. Para ello se analiza la mejor variable para dividir el conjunto de datos y se van obteniendo diferentes ramificaciones que permiten clasificar cada uno de los datos. El número de divisiones que se ejecutan son los diferentes nodos del árbol. En estos modelos el hiperparámetro que se utiliza es uno llamado cp que sirve para penalizar a los árboles que tienen una altura mayor. Si este parámetro tuviera el valor 0, el árbol tendría un gran número de nodos y muy probablemente el modelo estaría sobre entrenado.
+Por ello, realizaremos un barrido de este parámetro cp yendo desde 0 hasta 0.1 en pasos de 0.001.
+Además, entrenaremos 3 modelos diferentes que podemos ver a continuación.
 
 ## Caso general
 
+Este modelo se entrenará con todas las variables del conjunto de datos inicial. A continuación se muestra el gráfico del accurancy variando el cp:
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=100mm]{cpTree1.png}
+\caption{Accurancy y cp}
+\end{figure}
+
+Se puede ver que el valor más alto es $cp = 0.004$. Evaluando los resultados más de cerca, tenemos la matriz de confusión:
+\begin{table}[htb]
+\centering
+\begin{tabular}{|l|l|l|}
+\hline
+   & \multicolumn{1}{c|}{No} & \multicolumn{1}{c|}{Sí} \\ \hline
+No & 74                     & 20                     \\   \hline
+Sí & 26                     & 80                     \\   \hline
+\end{tabular}
+\caption{Matriz confusión DecisionTree}
+\end{table}
+
+
+
+Además de esta matriz, vamos a utilizar el indicador de la curva ROC. A continuación vemos la gráfica de la curva ROC para el conjunto de test.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=60mm]{ROC DT Test 1.png}
+\caption{ROC DC Test 1}
+\end{figure} 
+
+El área bajo la curva tiene un valor de 0.8215 lo que es aceptable.
+
+
 ## Optimizada
 
+Pero además de los datos representados anteriormente, este modelo nos proporciona una tabla que indica qué variables son importantes. 
+\begin{figure}[htb]
+\centering
+\includegraphics[width=90mm]{Importancia DT.png}
+\caption{Importancia DT}
+\end{figure}
+
+Podemos ver que las variables importantes son: Glucose, Age, BodyMassIndex, Pedigreefunc, SkinThinckness y Pregnant. Aunque algunas de ellas tienen más importancia que otras, vamos a coger estas 6 para crear un nuevo modelo.  Y analicemos la Accurancy en función del hoperparámetro cp:
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=100mm]{cpTree2.png}
+\caption{Accurancy y cp}
+\end{figure}
+
+Se puede ver que el valor más alto es $cp = 0$. Evaluando los resultados más de cerca, tenemos la matriz de confusión:
+\begin{table}[htb]
+\centering
+\begin{tabular}{|l|l|l|}
+\hline
+   & \multicolumn{1}{c|}{No} & \multicolumn{1}{c|}{Sí} \\ \hline
+No & 69                     & 22                     \\   \hline
+Sí & 31                     & 78                    \\    \hline
+\end{tabular}
+\caption{Matriz confusión DecisionTree2}
+\end{table}
+
+Además de esta matriz, vamos a utilizar el indicador de la curva ROC. A continuación vemos la gráfica de la curva ROC para el conjunto de test.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=60mm]{ROC DT Test 2.png}
+\caption{ROC DC Test 2}
+\end{figure} 
+
+El área bajo la curva tiene un valor de 0.8201 lo que es aceptable.
+
 # SVM
+Aquí hemos utilizado dos modelos diferentes dentro de la misma familia. El SVM lineal y el SVM Radial. No obstante, para ambos modelos se utiliza un hiperparámetro C. Para calcular cual es el valor más óptimo mostraremos un barrido de la variación del Accurancy con dicho parámetro. Analizaremos cada uno de los 2 casos:
 
 ## SVM Lineal
 
+Veamos el barrido del parámetro C con este modelo:
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=60mm]{c SVM Lineal.png}
+\caption{SVM Lineal parámetro}
+\end{figure}
+
+Se puede ver quelos puntos $C = 0.1$ y $C = 0.3$ generan los mismos valores de Accurancy pero nosotros nos quedaremos con el primero de ellos, $C=0.1$.  Evaluando los resultados más de cerca, tenemos la matriz de confusión:
+\begin{table}[htb]
+\centering
+\begin{tabular}{|l|l|l|}
+\hline
+   & \multicolumn{1}{c}{No} & \multicolumn{1}{c|}{Sí} \\ \hline
+No & 74                     & 28                     \\   \hline
+Sí & 26                     & 72                    \\ \hline
+\end{tabular}
+\caption{Matriz confusión SVM Lineal}
+\end{table}
+
+Además de esta matriz, vamos a utilizar el indicador de la curva ROC. A continuación vemos la gráfica de la curva ROC para el conjunto de test.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=60mm]{ROC SVM Lineal.png}
+\caption{ROC SVM Lineal}
+\end{figure} 
+
+El área bajo la curva tiene un valor de 0.819 lo que es aceptable.
+
+
+
 ## SVM Radial
+
+En este modelo no solo tenemos que modifical el parámetro C como ocurría en el DVM Lineal, sino que también tenemos que ver el parámetro Sigma. 
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=60mm]{params SVM Radial.png}
+\caption{Params SVM Radial}
+\end{figure}
+
+Se puede ver que los diferentes valores de sigma convergen cuando C es grande. Por este motivo vamos a coger la línea que siempre está por encima y que representa el valor $sigma=450$ y $C=14.5$
+Evaluando los resultados más de cerca, tenemos la matriz de confusión:
+\begin{table}[htb]
+\centering
+\begin{tabular}{|l|l|l|}
+\hline
+   & \multicolumn{1}{c}{No} & \multicolumn{1}{c|}{Sí} \\    \hline
+No & 100                     & 30                     \\    \hline
+Sí & 0                     & 0                        \\ \hline
+\end{tabular}
+\caption{Matriz confusión SVM Radial}
+\end{table}
+
+Además de esta matriz, vamos a utilizar el indicador de la curva ROC. A continuación vemos la gráfica de la curva ROC para el conjunto de test.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=60mm]{ROC SVM Radial.png}
+\caption{ROC SVM Radial}
+\end{figure} 
+
+El área bajo la curva tiene un valor de 0.85 lo que bastante bueno.
+
+
 
 # Redes Neuronales
 
@@ -113,3 +288,5 @@ Tras entrenar el modelo obtenemos un accuracy de 0.76 con un valor de kappa de 0
 # Comparación de modelos
 
 # Conclusiones
+
+# Extra
