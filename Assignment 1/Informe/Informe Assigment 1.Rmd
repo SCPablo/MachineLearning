@@ -5,7 +5,8 @@ author: "Álvaro Rodríguez González, Pablo Sanz Caperote"
 
 date: 'Curso 2021-22. Última actualización: `r format(Sys.time(), "%Y-%m-%d")`'
 header-includes:
-  \usepackage[spanish]{babel}
+  - \usepackage[spanish]{babel}
+  - \usepackage{wrapfig}
 linestretch: "1.25"
 output: pdf_document
 ---
@@ -59,17 +60,15 @@ Una vez resuelto el problema de los outliers analizaremos las diferentes variabl
 
 Antes de iniciar el desarrollo de los modelos debemos estudiar las posibles correlaciones que existen entre nuestras variables con el fin de poder conocer si existen variables que nos predigan lo mismo. Como se puede observar en la imagen inferior la correlación entre nuestras variables es muy baja como para contemplarse cualquier acción, por lo que podemos pasar al siguiente punto.
 
-\begin{figure}[h]
-\centering
-\includegraphics{corr}
+\begin{wrapfigure}{r}{.5\textwidth}
+\includegraphics[width=100mm]{corr}
 \caption{Matriz correlación}
-\end{figure}
+\end{wrapfigure}
 
 Por último antes de comenzar con los modelos miraremos si nuestra clase de salida esta balanceada o no. En caso de no estar deberemos contemplar si la balanceamos o no. Haciendo un table sobre la variable DIABETES observamos que nuestra clase no esta para nada balanceada 70-30. Por ello lo que haremos será mirar si en los modelos, estos son capaces de medirnos bien la salida de "Si".
 
 Haciendo una regresión logística obtenemos que sensitividad tanto en entrenamiento como en test es muy baja, 0.6 y 0.35 respectivamente, por lo que nos vemos obligados a balancear los datos. Para ello usaremos la libreria ROSE a traves de la función ovun.sample. A su vez también definiremos los métodos de control y la partición de datos (80-20) que usaremos para nuestros modelos.
 
-\newpage
 
 
 # Regresión Logística
@@ -86,7 +85,45 @@ Una vez obtenidas cuales son las variable más importante podemos pasar a optimi
 
 En este modelo de regresión logística tendremos como inputs a las cuatro variables obtenidas en el modelo anterior y como variable de salida tendremos a DIABETES. Además estableceremos como parametro de control una validación cruzada con 10 folds. 
 
-Tras entrenar el modelo obtenemos un accuracy de 0.76 con un valor de kappa de 0.52.
+Tras entrenar el modelo con una partición de 80-20 y 10 folds, obtenemos un accuracy de 0.76 con un valor de kappa de 0.52. Esto nos indica que trabajar con variables las cuales el modelo no considera importantes puede lastrarnos haciendo que fallemos más de lo debido. La validación cruzada nos da los siguientes valores de accuracy:
+
+\begin{center}
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|}
+\hline
+Nº Fold & 1 & 2  &  3 & 4& 5&6&7&8&9&10 \\
+\hline
+Accuracy & 0.7875	& 0.7750	& 0.8125	& 0.5875	 & 0.7625	&0.7500	&0.8250		& 0.6875	& 0.8000	&0.7500\\
+\hline
+\end{tabular}
+\caption{Accuracy Oversampling}
+\end{table}
+\end{center}
+
+Estos son altos pero existen algunos casos donde existe gran diferencia con el resto de muestras, como es el caso del fold 4 que esta por debajo del 0.6.
+
+
+\begin{wrapfigure}{l}{.4\textwidth}
+\includegraphics[width=70mm]{confusion.png}
+\caption{Matrices de confusión}
+\end{wrapfigure}
+
+Tras haber entrenado al modelo con el conjunto de datos de entrenamiento vamos a evaluarlo con nuestro conjunto de test. Para comprobar que todo va bien usaremos las matrices de confusión del modelo tanto para el conjunto de entrenamiento como para test. Como se puede comprobar en la imagen inferior nuestro modelo tiene un accuracy muy parecido tanto en training como en test por lo que podemos dejar de lado el problema de sobreentrenamiento.
+
+
+
+
+También es interesante el estudio de nuestros modelos a partir de sus curvas ROC. El objetivo es que se acerquen lo máximo posible a la esquina superior izquierda, para poder obtener un valor muy alto de área bajo la curva, ya que esto indica que habrá un alto ratio de Positivos Verdaderos (TP)/Falsos Positivos (FP).
+
+\begin{figure}
+\centering
+\includegraphics[width=100mm]{roc1}
+\caption{Curvas ROC}
+\end{figure}
+
+
+
 
 # KNN
 
@@ -104,11 +141,70 @@ Tras entrenar el modelo obtenemos un accuracy de 0.76 con un valor de kappa de 0
 
 # Redes Neuronales
 
+Los modelos de redes neuronales se basan en los hiperparámetros que señalan el número de nodos en la capa oculta (para nosotros es por defecto una sola), y el parámetro lambda del weight decay. Nuestra idea en este modelo será similar a la de la regresión logística, primero evaluaremos el modelo al completo para conocer las variables importantes y posteriormente haremos un modelo con las variables importantes unicamente.
+
 ## Caso general
+
+En este modelo nuestro objetivo es obtener las variables clave. Por ello entrenamos nuestro modelo con todas las variables y nos sale un accuracy de 0.85 con un valor kappa de 0.7 Las variables más importantes de nuestro modelo son BODYMASSINDEX, AGE, SKINTHICKNESS, GLUCOSE y BLOODPRESS. Esto se puede observar en el análisis de sensibilidad de la imagen inferior.
+
+\begin{figure}
+\centering
+\includegraphics[width=120mm]{sensibility}
+\caption{Análisis de sensibilidad}
+\end{figure}
+
+Una vez obtenidas cuales son las variable más importante podemos pasar a optimizar nuestro modelo.
 
 ## Optimizada
 
+\begin{wrapfigure}{r}{.5\textwidth}
+\includegraphics[width=100mm]{parametros}
+\caption{Elección de parámetros}
+\end{wrapfigure}
+
+En este modelo de redes neuronales tendremos como inputs a las cuatro variables obtenidas en el modelo anterior y como variable de salida tendremos a la variables DIABETES. Además estableceremos como parametro de control una validación cruzada con 10 folds. 
+
+
+A su vez para realizar un modelo óptimo estableceremos un rango de valores tanto para el número de nodos como para el valor de decay. Esto permitirá elegir aquellos parámetros que maximicen el accuracy de nuestro modelo. El como varia el accuracy del modelo según los parametros se puede ver en la imagen de la derecha.
+
+El modelo optimizado nos da un accuracy de 0.8325, lo cual esta bastante próximo al valor del modelo anterior. Esto significa que nuestro modelo funciona de forma correcta. A su vez tras haberlo configurado con 250 iteraciones nos da como valores óptimos de número de nodos y decay, 23 y 1e-09 respectivamente.
+
+Como en los modelos anteriores para ver si nuestro modelo no cae en la trampa del sobreentrenamiento calculemos las matrices de confusión, las cuales devolverán el accuracy de cada conjunto para poder compararlos. En el caso del conjunto de entrenamiento este presenta un accuracy de 0.9675 el cual es realmente alto y puede indicar que nos encontramos ante algún problema de overfitting. El accuracy del conjunto de test es de 0.765 lo cual es significativamente más pequeño que el de entrenamiento. Dicha diferencia no puede ser nada bueno y muy probablemente lo que ocurra es que nuestro modelo se ha sobreentrenado y por ende no va a generalizar bien.
+
+
+Por último, para poder comprobar el rendimiento del modelo, se representan las curvas ROC, calculándolas áreas bajo las curvas. En la imagen inferior podemos observar como para el entrenamiento la curva casi toca la esquina superior izquierda, mientras que en el test esta dista mucho de la anterior.
+
+\begin{figure}
+\centering
+\includegraphics[width=100mm]{roc5}
+\caption{Curvas ROC}
+\end{figure}
+
+Después de ver la imagen de las curvas podemos afirmar que nuestro modelo ha caido en el overfitting y no se podrá usar para ninguna generalización.
+
+
 # Random Forest
+
+Como queriamos ir un poco más alla en el proyecto y la parte de modelos hemos decidido realizar un modelo que aún no hemos visto y que en si es una generalización de los arboles de decisión. El modelo en cuestión son los random forest que consisten en una gran muestra de arboles de decisión todos ellos entrenados con una muestra ligeramente diferente. A su vez también estableceremos una lista de valores de donde puede salir el hiperparametro de dicho modelo (el hiperparametro consiste en el número de variables muestreadas aleatoriamente como candidatas en cada división). Otro parametro que le meteremos es que el número de arboles sea 500. 
+
+Tras entrenarlo con nuestro conjunto de entrenamiento el modelo nos devuelve un accuracy de 0.87875, lo cual es un valor bastante alto. A su vez el valor del número de variables muestreadas aleatoriamente óptimo es de 2. 
+
+\begin{wrapfigure}{r}{.5\textwidth}
+\includegraphics[width=90mm]{maconf5}
+\caption{Matriz de confusión}
+\end{wrapfigure}
+
+Para saber si dicho modelo es un modelo correcto calcularemos las matrices de confusión. La matriz de confusión de los datos de entrenamiento no deja duda alguna, el modelo lo ha hecho a la perfección ya que tenemos un accuracy de 1. Ahora debemos mirar el valor del accuracy para los datos de test, donde si este tuviese una gran diferencia con el de los datos de entrenamiento evidenciaria que nos encontramos antes un caso de overfitting. El accuracy para los datos de test es de 0.87, lo cual dista un poco del accuracy de los datos de entrenamiento pero es un valor razonable para negar la existencia de overfitting. Cabe destacar que nuestro modelo falla principalmente en la detección de los negativos, ya que tiene una especificidad de 0.8 frente a una sensitividad de 0.94, aunque en comparación con el resto de modelos hechos hasta ahora el nivel de especificidad es relativamente alto.
+
+\begin{wrapfigure}{l}{.5\textwidth}
+\includegraphics[width=60mm]{roc6}
+\caption{Curva ROC Random Forest}
+\end{wrapfigure}
+
+Por último miraremos la curva ROC de los datos de test, ya que la de los datos de entrenamiento es obvio como va a ser. En la imagen de la izquierda podemos observar como la curva ROC se acerca en gran cantidad a la esquina superior izquierda, lo que nos dice que nuestro modelo se ajusta bien y permite generalización. A su vez tenemos que el area bajo la curva (AUC) es de 0.94775, lo que nos vuelve a decir que siendo la evaluación del test nuestro modelo generalizará de forma muy buena.
+
+
+
 
 # Comparación de modelos
 
