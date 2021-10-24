@@ -69,13 +69,14 @@ Veamos a grandes rasgos una representación de las variables:
 ggpairs(datos, aes(color = DIABETES))
 ```
 
-Da la sensación de existir bastantes valores atípicos, veamoslo:
+Da la sensación de existir bastantes valores atípicos, veamoslo variable a variable:
 
+Comenzamos por la vaiable Glucose. Aplicaremos 3 técnicas diferentes para corregir los outliers y veremos cuál genera mejores resultados.
 ```{r}
 boxplot_glucosa <- boxplot(datos$GLUCOSE)
 boxplot_glucosa$out
 ```
-Una persona con nivel de glucosa 0 es imposible que este viva, por ello vamos a eliminar dichas observaciones.
+Una persona con nivel de glucosa 0 es imposible que esté viva, por ello vamos a eliminar dichas observaciones.
 
 ```{r}
 datos2 <- datos
@@ -172,14 +173,12 @@ LogReg.fit4
 El modelo que mejor nos ha salido es en el que cambiamos los valores de 0 de la glucosa por la mediana.
 
 Veamos ahora la presión sanguinea:
-
 ```{r}
 boxplot_blood <- boxplot(datos$BLOODPRESS)
 boxplot_blood$out
 
 ```
 Volvemos a realizar lo mismo que en el caso anterior:
-
 ```{r}
 datos2 <- datos2[datos2$BLOODPRESS > 0, ]
 ```
@@ -267,19 +266,17 @@ LogReg.fit4
 El modelo que mejor resultado proporciona es cambiar los valores 0 por la media.
 
 
-Veamos ahora el bodymassindex:
 
+Veamos ahora el bodymassindex:
 ```{r}
 boxplot_bodymass <- boxplot(datos$BODYMASSINDEX)
 boxplot_bodymass$out
 
 ```
 Hacemos lo mismo con el bodymassindex:
-
 ```{r}
 datos2 <- datos2[datos2$BODYMASSINDEX > 0, ]
 ```
-
 
 ```{r}
 datos3$BODYMASSINDEX <- ifelse(datos3$BODYMASSINDEX == 0, median(datos3$BODYMASSINDEX), datos3$BODYMASSINDEX)
@@ -367,7 +364,6 @@ El que mejor resultaods produce es cambiar los valores de 0 por la mediana.
 
 
 Hacemos lo mismo con el insulina, lo unico que en este caso no contemplamos eliminar los datos que son 0 ya que representan gran cantidad de nuestro dataset.
-
 ```{r}
 boxplot_insulin <- boxplot(datos$INSULIN)
 boxplot_insulin$out
@@ -434,7 +430,6 @@ Lo que mejor funciona es cambiar los 0 por la media
 
 
 Por último nos queda ver la variable Sthickness que era la otra que tenía datos atípicos a simple vista:
-
 ```{r}
 boxplot_sthick <- boxplot(datos$SKINTHICKNESS)
 boxplot_sthick$out
@@ -443,7 +438,6 @@ boxplot_sthick$out
 Aunque no se vean tambien existen valores atípicos, que son erroneos, como es el caso del 0.
 
 Por tanto nos encontramos en el mismo caso:
-
 ```{r}
 datos2 <- datos2[datos2$SKINTHICKNESS > 0 & datos2$SKINTHICKNESS < 90, ]
 ```
@@ -460,7 +454,6 @@ datos4$SKINTHICKNESS <- ifelse(datos4$SKINTHICKNESS > 90, mean(datos4$SKINTHICKN
 ```
 
 Y entrenamos modelos:
-
 ```{r}
 trainIndex <- createDataPartition(datos2$DIABETES,     
                                   p = 0.8,      
@@ -532,8 +525,8 @@ LogReg.fit4
 ```
 Lo que mejor funciona es cambiar los outliers por la mediana.
 
-Hacemos todos los cambios que hemos ido deciciendo sobre el dataset original:
 
+Hacemos todos los cambios que hemos ido deciciendo sobre el dataset original:
 ```{r}
 datos$GLUCOSE <- ifelse(datos$GLUCOSE == 0, median(datos$GLUCOSE), datos$GLUCOSE)
 datos$BODYMASSINDEX <- ifelse(datos$BODYMASSINDEX == 0, mean(datos$BODYMASSINDEX), datos$BODYMASSINDEX)
@@ -544,6 +537,7 @@ datos$INSULIN <- ifelse(datos$INSULIN > 600, mean(datos$INSULIN), datos$INSULIN)
 datos$SKINTHICKNESS <- ifelse(datos$SKINTHICKNESS == 0, median(datos$SKINTHICKNESS), datos$SKINTHICKNESS)
 datos$SKINTHICKNESS <- ifelse(datos$SKINTHICKNESS > 90, median(datos$SKINTHICKNESS), datos$SKINTHICKNESS)
 ```
+
 
 Y volvemos a hacer un EDA:
 
@@ -560,6 +554,7 @@ Todo bien, todo correcto.
 En el step anterior gracias a **str** hemos observado que nuestra variable de salida esta como un entero y nosotros la necesitamos como un factor. Como la variables toma solo el 0 y 1 y dichos valores no son correctos para los diferentes niveles dentro de un factor vamos a cambiar el nombre por "Si" y "No" y posteriormente lo pasamos a factor. 
 
 A pesar de que deberia estar en esta parte dicho cambio lo hemos hecho al principio del documento por conveniencia grupal.
+ 
 
 
 
@@ -713,7 +708,6 @@ PlotClassPerformance(fTR1_eval$DIABETES,       #Real observations
 ```
 
 ```{r}
-
 PlotClassPerformance(fTS1_eval$DIABETES,       #Real observations
                      fTS1_eval$LRprob,  #predicted probabilities
                      selClass = "Si") #Class to be analyzed)
@@ -851,8 +845,6 @@ PlotClassPerformance(fTS2_eval$DIABETES,
 ```
 
 ## Arboles de decisión
-
-
 
 ```{r}
 fTR3 <- datos_bal[trainIndex,]
@@ -1380,5 +1372,108 @@ dotchart(c(LR1, LR2, KNN, TREE1, TREE2, SVM1, SVM2, MLP1, MLP2, RF), c("LogReg1"
 
 
 
+
+## Extra
+
+Hemos pensado en tratar la variable Pregnant como una variable discreta en lugar de continua. Tras ello evaluaremos algunos modelos para ver si ha mejorado el resultado.
+```{r}
+datos_bal$PREGNANT <- cut(datos_bal$PREGNANT, breaks = c(-1, 1, 2, 3, 4, 5, 99), labels = c("0", "1", "2", "3", "4", "+5"))
+str(datos_bal)
+```
+
+
+Después de esto hacemos un modelo de Redes neuronales para ver si hemos conseguido una mejoría
+
+```{r}
+fTR6 <- datos_bal[trainIndex,]
+fTS6 <- datos_bal[-trainIndex,]
+
+fTR6_eval = fTR5
+fTS6_eval = fTS5
+
+mlp.fit = train(form = DIABETES ~ .,
+                data = fTR6,  
+                method = "nnet",
+                preProcess = c("center","scale"),
+                maxit = 250,   
+                
+                tuneGrid = expand.grid(size = seq(5,15,length.out = 11),
+                                       decay=c(10^(-9),0.0001,0.001,0.01,0.1,1)), 
+                trControl = ctrl, 
+                metric = "Accuracy")
+
+mlp.fit
+```
+
+
+```{r}
+ggplot(mlp.fit)+scale_x_log10()
+```
+
+
+```{r}
+mlp.fit$finalModel
+plotnet(mlp.fit$finalModel)
+```
+
+
+```{r}
+SensAnalysisMLP(mlp.fit) 
+```
+
+
+```{r}
+fTR6_eval$mlp_prob = predict(mlp.fit, type="prob" , newdata = fTR6)
+fTR6_eval$mlp_pred = predict(mlp.fit, type="raw" , newdata = fTR6) 
+
+fTS6_eval$mlp_prob = predict(mlp.fit, type="prob" , newdata = fTS6) 
+fTS6_eval$mlp_pred = predict(mlp.fit, type="raw" , newdata = fTS6) 
+```
+
+
+```{r}
+Plot2DClass(fTR6[,],
+            fTR6$DIABETES,     
+            mlp.fit,
+            var1="GLUCOSE", var2="BODYMASSINDEX",
+            selClass = "Si")  
+```
+
+
+```{r}
+confusionMatrix(data = fTR6_eval$mlp_pred, 
+                reference = fTR6_eval$DIABETES, 
+                positive = "Si") 
+```
+
+
+```{r}
+confusionMatrix(fTS6_eval$mlp_pred, 
+                fTS6_eval$DIABETES, 
+                positive = "Si")
+```
+
+
+```{r}
+PlotClassPerformance(fTR6_eval$DIABETES,
+                     fTR6_eval$mlp_prob, 
+                     selClass = "Si") 
+```
+
+```{r}
+PlotClassPerformance(fTS6_eval$DIABETES,      
+                     fTS6_eval$mlp_prob, 
+                     selClass = "Si")
+```
+
+Ahora comparamos este nuevo modelo de Redes Neuronales con los 2 anteriores que habíamos creado.
+```{r}
+MLP1 <- confusionMatrix(fTS5_eval$mlp_pred, fTS5_eval$DIABETES, positive = "Si")$overall[1]
+MLP2 <- confusionMatrix(fTS5_2_eval$mlp_pred, fTS5_2_eval$DIABETES, positive = "Si")$overall[1]
+MLP3 <- confusionMatrix(fTS6_eval$mlp_pred, fTS6_eval$DIABETES, positive = "Si")$overall[1]
+
+dotchart(c(MLP1, MLP2, MLP3), c("Neural Network 1", "Neural Network 2", "NN3"), bg = "black", main = "Test Accuracy")
+```
+Llegamos a la conclusión que este nuevo modelo funciona un poco mejor que los 2 anteriores.
 
 
