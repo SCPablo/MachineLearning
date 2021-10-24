@@ -23,7 +23,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 Comenzamos cargando tanto los datos como las librerias que necesitaremos para el desarrollo de nuestros modelos. Tras ello hacemos una primera exploración rápida de estos a través de la tabla de R. 
 
-A continuación lo primero que hacemos es ver cómo está estructurado nuestro conjunto de datos y nos damos cuenta de que todas las variables son de tipo numérico (int o num). Esto nos supone un problema para trabajar con los modelos ya que necesitamos que nuestra variable de salida (en este caso sera DIABETES) sea un factor. Por ello transformamos la variable DIABETES en factor, donde también cambiamos los 0's por "No" y los 1's por "Si" ya que si dejasemos los 0's y 1's no estariamos trabajando correctamente con factores.
+A continuación lo primero que hacemos es ver cómo está estructurado nuestro conjunto de datos y nos damos cuenta de que todas las variables son de tipo numérico (int o num). Esto nos supone un problema para trabajar con los modelos ya que necesitamos que nuestra variable de salida (en este caso sera DIABETES) sea un factor. Por ello transformamos la variable DIABETES en factor.
 
 Tras este cambio, lo que haremos será hacer un summary de la tabla de datos con la finalidad de ver si esta tiene algun valor nulo (NA's). La función nos devuelve que no existe ningún NA, por ello podemos pasar a buscar valores atípicos dentro de nuestras variables.
 
@@ -127,18 +127,21 @@ También es interesante el estudio de nuestros modelos a partir de sus curvas RO
 
 # KNN
 
-El modelo KNN se basa en comparar cada uno de los datos con un número k de vecinos más cercanos. Para este modelo se necesita el hiperparámetro k, que indica el número de vecinos cercanos que se utilizan en la comparación. Para obtener el k más óptimo se realiza un barrido con diferentes k hasta obtener los resultados más óptimos.
+El modelo KNN se basa en comparar cada uno de los datos con un número k de vecinos más cercanos. Para este modelo se necesita el hiperparámetro k, que indica el número de vecinos cercanos que se utilizan en la comparación. 
 
-En la siguiente figura se puede observar el barrido del parámetro k. 
-\begin{figure}[htb]
+\begin{wrapfigure}{r}{.4\textwidth}
 \centering
-\includegraphics[width=100mm]{kNN k.png}
+\includegraphics[width=75mm]{kNN k.png}
 \caption{Valores de diferentes k}
-\end{figure}
+\end{wrapfigure}
 
-Se puede observar que el valor de accurancy más alto se obtiene cuando el k=2. También podemos observar que el valor de k más alto que hemos probado es 40, porque se ve claramente que el accurancy tiene una línea descendente cuanto más alto es el k. Que el valor seccionado sea $k=2$ puede ocasionar un sobre entrenamiento y por ello vemos también el valor Kappa que en este caso es $Kappa=0.5225$.
+Para obtener el k más óptimo se realiza un barrido con diferentes k hasta obtener los resultados más óptimos. En la figura de la derecha se puede observar el barrido del parámetro k. 
 
-Evaluando los resultados más de cerca, tenemos la matriz de confusión:
+
+Se puede observar que el valor de accurancy más alto se obtiene cuando el k=2. También podemos observar que el valor de k más alto que hemos probado es 40, porque se ve claramente que el accurancy tiene una línea descendente cuanto más alto es el k. Que el valor seccionado sea $k=2$ puede ocasionar un sobre entrenamiento y por ello vemos también el valor Kappa que en este caso es $\text{Kappa}=0.5225$.
+
+Evaluando los resultados más de cerca, podemos calcular la matriz de confusión para los datos de test. Esta nos dará información importante como el accuracy de nuestro modelo en el test. Este nos da un accuracy de 0.715 lo cual no esta mal ya que su diferencia con el accuracy del modelo es relativamente pequeña.
+
 \begin{table}[htb]
 \centering
 \begin{tabular}{|l|l|l|}
@@ -151,7 +154,7 @@ Sí & 38                     & 81                    \\   \hline
 \end{table}
 
 
-Además de esta matriz, vamos a utilizar el indicador de la curva ROC. A continuación vemos la gráfica de la curva ROC para el conjunto de test.
+Además de esta matriz, vamos a utilizar el indicador de la curva ROC. A continuación vemos la gráfica de la curva ROC para el conjunto de test. El área bajo la curva tiene un valor de 0.81145 lo que es aceptable.
 
 \begin{figure}[htb]
 \centering
@@ -159,7 +162,6 @@ Además de esta matriz, vamos a utilizar el indicador de la curva ROC. A continu
 \caption{ROC KNN Test}
 \end{figure}
 
-El área bajo la curva tiene un valor de 0.81145 lo que es aceptable.
 
 
 # Árboles de decisión 
@@ -170,15 +172,16 @@ Además, entrenaremos 3 modelos diferentes que podemos ver a continuación.
 
 ## Caso general
 
-Este modelo se entrenará con todas las variables del conjunto de datos inicial. A continuación se muestra el gráfico del accurancy variando el cp:
+Este modelo se entrenará con todas las variables del conjunto de datos inicial. En la parte derecha se muestra el gráfico del accuracy variando el cp:
 
-\begin{figure}[htb]
+\begin{figure}[h]
 \centering
-\includegraphics[width=100mm]{cpTree1.png}
-\caption{Accurancy y cp}
+\includegraphics[width=70mm]{cpTree1.png}
+\caption{Accuracy y cp}
 \end{figure}
 
 Se puede ver que el valor más alto es $cp = 0.004$. Evaluando los resultados más de cerca, tenemos la matriz de confusión:
+
 \begin{table}[htb]
 \centering
 \begin{tabular}{|l|l|l|}
@@ -192,15 +195,17 @@ Sí & 26                     & 80                     \\   \hline
 
 
 
-Además de esta matriz, vamos a utilizar el indicador de la curva ROC. A continuación vemos la gráfica de la curva ROC para el conjunto de test.
+Además de esta matriz, vamos a utilizar el indicador de la curva ROC. A continuación vemos la gráfica de la curva ROC para el conjunto de test. El área bajo la curva tiene un valor de 0.8215 lo que es aceptable.
 
-\begin{figure}[htb]
+
+\begin{figure}
 \centering
-\includegraphics[width=60mm]{ROC DT Test 1.png}
+\includegraphics[width=50mm]{ROC DT Test 1.png}
 \caption{ROC DC Test 1}
 \end{figure} 
 
-El área bajo la curva tiene un valor de 0.8215 lo que es aceptable.
+
+\newpage
 
 
 ## Optimizada
@@ -232,7 +237,7 @@ Sí & 31                     & 78                    \\    \hline
 \caption{Matriz confusión DecisionTree2}
 \end{table}
 
-Además de esta matriz, vamos a utilizar el indicador de la curva ROC. A continuación vemos la gráfica de la curva ROC para el conjunto de test.
+Además de esta matriz, vamos a utilizar el indicador de la curva ROC. A continuación vemos la gráfica de la curva ROC para el conjunto de test. El área bajo la curva tiene un valor de 0.8201 lo que es aceptable.
 
 \begin{figure}[htb]
 \centering
@@ -240,7 +245,7 @@ Además de esta matriz, vamos a utilizar el indicador de la curva ROC. A continu
 \caption{ROC DC Test 2}
 \end{figure} 
 
-El área bajo la curva tiene un valor de 0.8201 lo que es aceptable.
+
 
 # SVM
 Aquí hemos utilizado dos modelos diferentes dentro de la misma familia. El SVM lineal y el SVM Radial. No obstante, para ambos modelos se utiliza un hiperparámetro C. Para calcular cual es el valor más óptimo mostraremos un barrido de la variación del Accurancy con dicho parámetro. Analizaremos cada uno de los 2 casos:
@@ -267,7 +272,7 @@ Sí & 26                     & 72                    \\ \hline
 \caption{Matriz confusión SVM Lineal}
 \end{table}
 
-Además de esta matriz, vamos a utilizar el indicador de la curva ROC. A continuación vemos la gráfica de la curva ROC para el conjunto de test.
+Además de esta matriz, vamos a utilizar el indicador de la curva ROC. A continuación vemos la gráfica de la curva ROC para el conjunto de test. El área bajo la curva tiene un valor de 0.819 lo que es aceptable.
 
 \begin{figure}[htb]
 \centering
@@ -275,7 +280,7 @@ Además de esta matriz, vamos a utilizar el indicador de la curva ROC. A continu
 \caption{ROC SVM Lineal}
 \end{figure} 
 
-El área bajo la curva tiene un valor de 0.819 lo que es aceptable.
+
 
 
 
@@ -344,45 +349,105 @@ A su vez para realizar un modelo óptimo estableceremos un rango de valores tant
 
 El modelo optimizado nos da un accuracy de 0.8325, lo cual esta bastante próximo al valor del modelo anterior. Esto significa que nuestro modelo funciona de forma correcta. A su vez tras haberlo configurado con 250 iteraciones nos da como valores óptimos de número de nodos y decay, 23 y 1e-09 respectivamente.
 
-Como en los modelos anteriores para ver si nuestro modelo no cae en la trampa del sobreentrenamiento calculemos las matrices de confusión, las cuales devolverán el accuracy de cada conjunto para poder compararlos. En el caso del conjunto de entrenamiento este presenta un accuracy de 0.9675 el cual es realmente alto y puede indicar que nos encontramos ante algún problema de overfitting. El accuracy del conjunto de test es de 0.765 lo cual es significativamente más pequeño que el de entrenamiento. Dicha diferencia no puede ser nada bueno y muy probablemente lo que ocurra es que nuestro modelo se ha sobreentrenado y por ende no va a generalizar bien.
+Como en los modelos anteriores para ver si nuestro modelo no cae en la trampa del sobreentrenamiento calculemos las matrices de confusión, las cuales devolverán el accuracy de cada conjunto para poder compararlos.
+
+\begin{wrapfigure}{l}{0.45\textwidth}
+\centering
+\includegraphics[width=60mm]{curvarocrnopt}
+\caption{Curvas ROC}
+\end{wrapfigure}
+
+En el caso del conjunto de entrenamiento este presenta un accuracy de 0.9675 el cual es realmente alto y puede indicar que nos encontramos ante algún problema de overfitting. 
+
+
+El accuracy del conjunto de test es de 0.765 lo cual es significativamente más pequeño que el de entrenamiento. Dicha diferencia no puede ser nada bueno y muy probablemente lo que ocurra es que nuestro modelo se ha sobreentrenado y por ende no va a generalizar bien.
 
 
 Por último, para poder comprobar el rendimiento del modelo, se representan las curvas ROC, calculándolas áreas bajo las curvas. En la imagen inferior podemos observar como para el entrenamiento la curva casi toca la esquina superior izquierda, mientras que en el test esta dista mucho de la anterior.
 
-\begin{figure}
-\centering
-\includegraphics[width=100mm]{roc5}
-\caption{Curvas ROC}
-\end{figure}
 
-Después de ver la imagen de las curvas podemos afirmar que nuestro modelo ha caido en el overfitting y no se podrá usar para ninguna generalización.
+
+Podemos afirmar que nuestro modelo ha caido en el overfitting y no se podrá usar para ninguna generalización.
 
 
 # Random Forest
 
 Como queriamos ir un poco más alla en el proyecto y la parte de modelos hemos decidido realizar un modelo que aún no hemos visto y que en si es una generalización de los arboles de decisión. El modelo en cuestión son los random forest que consisten en una gran muestra de arboles de decisión todos ellos entrenados con una muestra ligeramente diferente. A su vez también estableceremos una lista de valores de donde puede salir el hiperparametro de dicho modelo (el hiperparametro consiste en el número de variables muestreadas aleatoriamente como candidatas en cada división). Otro parametro que le meteremos es que el número de arboles sea 500. 
 
-Tras entrenarlo con nuestro conjunto de entrenamiento el modelo nos devuelve un accuracy de 0.87875, lo cual es un valor bastante alto. A su vez el valor del número de variables muestreadas aleatoriamente óptimo es de 2. 
-
 \begin{wrapfigure}{r}{.5\textwidth}
 \includegraphics[width=90mm]{maconf5}
 \caption{Matriz de confusión}
 \end{wrapfigure}
 
-Para saber si dicho modelo es un modelo correcto calcularemos las matrices de confusión. La matriz de confusión de los datos de entrenamiento no deja duda alguna, el modelo lo ha hecho a la perfección ya que tenemos un accuracy de 1. Ahora debemos mirar el valor del accuracy para los datos de test, donde si este tuviese una gran diferencia con el de los datos de entrenamiento evidenciaria que nos encontramos antes un caso de overfitting. El accuracy para los datos de test es de 0.87, lo cual dista un poco del accuracy de los datos de entrenamiento pero es un valor razonable para negar la existencia de overfitting. Cabe destacar que nuestro modelo falla principalmente en la detección de los negativos, ya que tiene una especificidad de 0.8 frente a una sensitividad de 0.94, aunque en comparación con el resto de modelos hechos hasta ahora el nivel de especificidad es relativamente alto.
+Tras entrenarlo con nuestro conjunto de entrenamiento el modelo nos devuelve un accuracy de 0.87875, lo cual es un valor bastante alto. A su vez el valor del número de variables muestreadas aleatoriamente óptimo es de 2. 
 
-\begin{wrapfigure}{l}{.5\textwidth}
+
+Para saber si dicho modelo es un modelo correcto calcularemos las matrices de confusión. La matriz de confusión de los datos de entrenamiento no deja duda alguna, el modelo lo ha hecho a la perfección ya que tenemos un accuracy de 1. Ahora debemos mirar el valor del accuracy para los datos de test, donde si este tuviese una gran diferencia con el de los datos de entrenamiento evidenciaria que nos encontramos antes un caso de overfitting. El accuracy para los datos de test es de 0.87, lo cual dista un poco del accuracy de los datos de entrenamiento pero es un valor razonable para negar la existencia de overfitting. 
+
+
+\begin{wrapfigure}{l}{.55\textwidth}
 \includegraphics[width=60mm]{roc6}
 \caption{Curva ROC Random Forest}
 \end{wrapfigure}
 
-Por último miraremos la curva ROC de los datos de test, ya que la de los datos de entrenamiento es obvio como va a ser. En la imagen de la izquierda podemos observar como la curva ROC se acerca en gran cantidad a la esquina superior izquierda, lo que nos dice que nuestro modelo se ajusta bien y permite generalización. A su vez tenemos que el area bajo la curva (AUC) es de 0.94775, lo que nos vuelve a decir que siendo la evaluación del test nuestro modelo generalizará de forma muy buena.
+Cabe destacar que nuestro modelo falla principalmente en la detección de los negativos, ya que tiene una especificidad de 0.8 frente a una sensitividad de 0.94.
+
+
+Por último miraremos la curva ROC de los datos de test, ya que la de los datos de entrenamiento es obvio como va a ser al tener un accuracy de 1. En la imagen de la izquierda podemos observar como la curva ROC se acerca en gran cantidad a la esquina superior izquierda, lo que nos dice que nuestro modelo se ajusta bien y permite generalización. A su vez tenemos que el area bajo la curva (AUC) es de 0.94775, es decir, nuestro modelo generalizará bastante bien antes nuevos datos que no hayan sido evaluados.
+
+
 
 
 
 
 # Comparación de modelos
 
+Para comparar los modelos usaremos una tabla donde compararemos los diferentes accuracies obtenidos asi como también veremos los hiperparametros seleccionados. A su vez también usaremos una gráfica para comparar de formas más visual los diferentes modelos. Veamos como es la tabla:
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\textbf{Modelo} & \textbf{Hiperparámetro} & \textbf{Accuracy CrosVal} & \textbf{Train Accuracy} & \textbf{Test Accuracy} \\
+\hline
+\textbf{RegLog} & - & 0.746 & 0.75 & 0.74 \\
+\hline
+\textbf{RegLog Óptima} & - & 0.76 & 0.755 & 0.735 \\
+\hline
+\textbf{KNN} & k = 2 & 0.762 & 0.763 & 0.715 \\
+\hline
+\textbf{Arbol Dec} & cp = 0.004 & 0.78125 & 0.82 & 0.775 \\
+\hline
+\textbf{Arbol Dec Óptimo} & cp = 0.004 & 0.782 & 0.79 & 0.77 \\
+\hline
+\textbf{SVM Lineal} & C= 0.1 & 0.757 & 0.79 & 0.73\\
+\hline
+\textbf{SVM Radial} & $\sigma$ = 450 y C= 14.53 & 0.88 & 0.965 & 0.85 \\
+\hline 
+\textbf{RNeuro} & n = 10 y decay = 1e-04 & 0.85 & 0.8962 & 0.825  \\
+\hline 
+\textbf{RNeuro Óptimo} & n = 23 y decay = 1e-09 & 0.8325 & 0.9675 & 0.765 \\
+\hline
+\textbf{Random Forest} & mtry = 2 & 0.87875 & 1 & 0.87 \\
+\hline
+\end{tabular}
+\end{center}
+ 
+
+Veamos la gráfica que nos muestra los diferentes accuracies de los modelos evaluados:
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=90mm]{comp}
+\caption{Comparación modelos}
+\end{figure}
+
+Viendo ambos elementos para comparar podemos afirmar que los modelos que mejor predicen para este tipo de datos son el modelo de random forest y el SVM radial.
+
+
 # Conclusiones
 
-# Extra
+Haciendo enfoque en los resultados obtenidos, se puede ver que son relativamente buenos ya que en la gran mayoria de ellos la diferencia entre el accuracy de entrenamiento y de test no es relevante. Sin embargo existen excepciones como el caso de redes neuronales donde existe una diferencia relevante entre train y test. Si tuviesemos que escoger un modelo para trabajar con este tipo de datos estariamos entre el modelo de random forest o el de support vector machine con un método radial, ya que son los que mejor accuracy tienen y no tienen una gran diferencia entre entrenamiento y test.
+
+
+
+
