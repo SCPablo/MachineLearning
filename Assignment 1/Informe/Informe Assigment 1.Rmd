@@ -1,5 +1,5 @@
 ---
-title: "Informe Assigment 1"
+title: "Informe Assignment 1"
 subtitle: ICAI. Machine Learning.
 author: "Álvaro Rodríguez González, Pablo Sanz Caperote"
 
@@ -74,9 +74,19 @@ Haciendo una regresión logística obtenemos que sensitividad tanto en entrenami
 
 # Regresión Logística
 
+Distinguiremos entre dos modelos diferentes, el primero donde trabajaremos sobre todas las variables y veremos cuales son las más importantes y luego el optimizado que solo tomará las variables clave.
+
 ## Caso general
 
+Nuestro primer modelo de regresión logística nos da un accuracy de 0.746 y un valor de kappa de 0.4925. Pero lo realmente interesante es que el modelo nos da también las variables más importantes, si ejecutamos la función summary obtenemos que las variables PREGNANT con un p-valor de 6.32e-05, GLUCOSE con p-valor menor que 2e-16 , BODYMASSINDEX con p-valor de 8.80e-08 y PEDIGREEFUNC con p-valor de 0.00785 son las más importantes de nuestro modelo.
+
+Una vez obtenidas cuales son las variable más importante podemos pasar a optimizar nuestro modelo.
+
 ## Optimizada
+
+En este modelo de regresión logística tendremos como inputs a las cuatro variables obtenidas en el modelo anterior y como variable de salida tendremos a DIABETES. Además estableceremos como parametro de control una validación cruzada con 10 folds. 
+
+Tras entrenar el modelo obtenemos un accuracy de 0.76 con un valor de kappa de 0.52.
 
 # KNN
 
