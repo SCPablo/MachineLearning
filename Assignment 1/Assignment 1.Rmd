@@ -725,6 +725,7 @@ LogReg2.fit <- train(form = DIABETES ~ PREGNANT + BODYMASSINDEX + GLUCOSE + PEDI
               method = "glm", preProcess = c("center","scale"), trControl = ctrl,metric = "Accuracy")    
 
 LogReg2.fit
+LogReg2.fit$resample   
 ```
 
 ```{r}

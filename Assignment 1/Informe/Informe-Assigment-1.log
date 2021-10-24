@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.23 (TeX Live 2022/dev) (preloaded format=pdflatex 2021.10.24)  24 OCT 2021 22:29
+This is pdfTeX, Version 3.141592653-2.6-1.40.23 (TeX Live 2022/dev) (preloaded format=pdflatex 2021.10.24)  24 OCT 2021 22:32
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -333,39 +333,46 @@ Package babel Info: Making " an active character on input line 570.
 Package babel Info: Making . an active character on input line 675.
 Package babel Info: Making < an active character on input line 722.
 Package babel Info: Making > an active character on input line 722.
-)) (/Users/pablo/Library/TinyTeX/texmf-dist/tex/latex/etoolbox/etoolbox.sty
+)) (/Users/pablo/Library/TinyTeX/texmf-dist/tex/latex/wrapfig/wrapfig.sty
+\wrapoverhang=\dimen163
+\WF@size=\dimen164
+\c@WF@wrappedlines=\count284
+\WF@box=\box52
+\WF@everypar=\toks26
+Package: wrapfig 2003/01/31  v 3.6
+) (/Users/pablo/Library/TinyTeX/texmf-dist/tex/latex/etoolbox/etoolbox.sty
 Package: etoolbox 2020/10/05 v2.5k e-TeX tools for LaTeX (JAW)
-\etb@tempcnta=\count284
+\etb@tempcnta=\count285
 )
 (/Users/pablo/Library/TinyTeX/texmf-dist/tex/latex/l3backend/l3backend-pdftex.d
 ef
 File: l3backend-pdftex.def 2021-10-18 L3 backend support: PDF output (pdfTeX)
-\l__color_backend_stack_int=\count285
-\l__pdf_internal_box=\box52
+\l__color_backend_stack_int=\count286
+\l__pdf_internal_box=\box53
 ) (./Informe-Assigment-1.aux
 LaTeX Info: Redefining \. on input line 25.
 LaTeX Info: Redefining \% on input line 25.
 )
 \openout1 = `Informe-Assigment-1.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 79.
-LaTeX Font Info:    ... okay on input line 79.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 79.
-LaTeX Font Info:    ... okay on input line 79.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 79.
-LaTeX Font Info:    ... okay on input line 79.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 79.
-LaTeX Font Info:    ... okay on input line 79.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 79.
-LaTeX Font Info:    ... okay on input line 79.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 79.
-LaTeX Font Info:    ... okay on input line 79.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 79.
-LaTeX Font Info:    ... okay on input line 79.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 79.
-LaTeX Font Info:    ... okay on input line 79.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 79.
-LaTeX Font Info:    ... okay on input line 79.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 80.
+LaTeX Font Info:    ... okay on input line 80.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 80.
+LaTeX Font Info:    ... okay on input line 80.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 80.
+LaTeX Font Info:    ... okay on input line 80.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 80.
+LaTeX Font Info:    ... okay on input line 80.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 80.
+LaTeX Font Info:    ... okay on input line 80.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 80.
+LaTeX Font Info:    ... okay on input line 80.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 80.
+LaTeX Font Info:    ... okay on input line 80.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 80.
+LaTeX Font Info:    ... okay on input line 80.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 80.
+LaTeX Font Info:    ... okay on input line 80.
 
 (/Users/pablo/Library/TinyTeX/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.s
 ty
@@ -377,7 +384,7 @@ Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
 File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
-Package hyperref Info: Link coloring OFF on input line 79.
+Package hyperref Info: Link coloring OFF on input line 80.
 (/Users/pablo/Library/TinyTeX/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2021-04-02 v2.47 Cross-referencing by name of section
 (/Users/pablo/Library/TinyTeX/texmf-dist/tex/latex/refcount/refcount.sty
@@ -387,11 +394,11 @@ Package: refcount 2019/12/15 v3.6 Data extraction from label references (HO)
 ing.sty
 Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
 )
-\c@section@level=\count286
+\c@section@level=\count287
 )
-LaTeX Info: Redefining \ref on input line 79.
-LaTeX Info: Redefining \pageref on input line 79.
-LaTeX Info: Redefining \nameref on input line 79.
+LaTeX Info: Redefining \ref on input line 80.
+LaTeX Info: Redefining \pageref on input line 80.
+LaTeX Info: Redefining \nameref on input line 80.
 (./Informe-Assigment-1.out) (./Informe-Assigment-1.out)
 \@outlinefile=\write3
 \openout3 = `Informe-Assigment-1.out'.
@@ -430,40 +437,40 @@ LaTeX Info: Redefining \nameref on input line 79.
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
-LaTeX Info: Redefining \. on input line 79.
-LaTeX Info: Redefining \% on input line 79.
+LaTeX Info: Redefining \. on input line 80.
+LaTeX Info: Redefining \% on input line 80.
 LaTeX Font Info:    Trying to load font information for OT1+lmr on input line 8
-1.
+2.
 (/Users/pablo/Library/TinyTeX/texmf-dist/tex/latex/lm/ot1lmr.fd
 File: ot1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    Trying to load font information for OML+lmm on input line 8
-1.
+2.
 (/Users/pablo/Library/TinyTeX/texmf-dist/tex/latex/lm/omllmm.fd
 File: omllmm.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    Trying to load font information for OMS+lmsy on input line 
-81.
+82.
 (/Users/pablo/Library/TinyTeX/texmf-dist/tex/latex/lm/omslmsy.fd
 File: omslmsy.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    Trying to load font information for OMX+lmex on input line 
-81.
+82.
 (/Users/pablo/Library/TinyTeX/texmf-dist/tex/latex/lm/omxlmex.fd
 File: omxlmex.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <12> on input line 81.
+(Font)              <12> on input line 82.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <8> on input line 81.
+(Font)              <8> on input line 82.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <6> on input line 81.
-LaTeX Font Info:    Trying to load font information for U+msa on input line 81.
+(Font)              <6> on input line 82.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 82.
 
 (/Users/pablo/Library/TinyTeX/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 81.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 82.
 
 (/Users/pablo/Library/TinyTeX/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
@@ -492,70 +499,133 @@ LaTeX Warning: `h' float specifier changed to `ht'.
 File: corr.png Graphic file (type png)
 <use corr.png>
 Package pdftex.def Info: corr.png  used on input line 185.
-(pdftex.def)             Requested size: 469.75925pt x 290.2441pt.
+(pdftex.def)             Requested size: 284.51868pt x 175.7919pt.
+
+Overfull \hbox (49.64117pt too wide) in paragraph at lines 185--186
+[][] 
+ []
+
 [4 <./corr.png>]
-<kNN k.png, id=125, 1405.25pt x 868.24374pt>
+LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 2
+43.
+(/Users/pablo/Library/TinyTeX/texmf-dist/tex/latex/lm/ts1lmr.fd
+File: ts1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
+)
+<confusion.png, id=128, 640.3925pt x 301.125pt>
+File: confusion.png Graphic file (type png)
+<use confusion.png>
+Package pdftex.def Info: confusion.png  used on input line 257.
+(pdftex.def)             Requested size: 199.16454pt x 93.65103pt.
+
+Overfull \hbox (11.2654pt too wide) in paragraph at lines 257--258
+[][] 
+ []
+
+<roc1.png, id=129, 598.235pt x 281.05pt>
+File: roc1.png Graphic file (type png)
+<use roc1.png>
+Package pdftex.def Info: roc1.png  used on input line 277.
+(pdftex.def)             Requested size: 284.52971pt x 133.67166pt.
+[5 <./confusion.png> <./roc1.png>]
+<kNN k.png, id=139, 1405.25pt x 868.24374pt>
 File: kNN k.png Graphic file (type png)
 <use kNN k.png>
-Package pdftex.def Info: kNN k.png  used on input line 250.
+Package pdftex.def Info: kNN k.png  used on input line 294.
 (pdftex.def)             Requested size: 284.51868pt x 175.7919pt.
-<ROC KNN Test.png, id=126, 350.30875pt x 385.44pt>
+<ROC KNN Test.png, id=140, 350.30875pt x 385.44pt>
 File: ROC KNN Test.png Graphic file (type png)
 <use ROC KNN Test.png>
-Package pdftex.def Info: ROC KNN Test.png  used on input line 278.
+Package pdftex.def Info: ROC KNN Test.png  used on input line 323.
 (pdftex.def)             Requested size: 170.71736pt x 187.83801pt.
-[5]
-<cpTree1.png, id=138, 725.71124pt x 439.6425pt>
+[6 <./kNN k.png>]
+<cpTree1.png, id=151, 725.71124pt x 439.6425pt>
 File: cpTree1.png Graphic file (type png)
 <use cpTree1.png>
-Package pdftex.def Info: cpTree1.png  used on input line 309.
+Package pdftex.def Info: cpTree1.png  used on input line 354.
 (pdftex.def)             Requested size: 284.53223pt x 172.37222pt.
-[6 <./kNN k.png> <./ROC KNN Test.png>]
-<ROC DT Test 1.png, id=149, 355.3275pt x 393.47pt>
+<ROC DT Test 1.png, id=152, 355.3275pt x 393.47pt>
 File: ROC DT Test 1.png Graphic file (type png)
 <use ROC DT Test 1.png>
-Package pdftex.def Info: ROC DT Test 1.png  used on input line 331.
+Package pdftex.def Info: ROC DT Test 1.png  used on input line 377.
 (pdftex.def)             Requested size: 170.71791pt x 189.04356pt.
-<Importancia DT.png, id=150, 698.61pt x 393.47pt>
+[7 <./ROC KNN Test.png> <./cpTree1.png>]
+<Importancia DT.png, id=164, 698.61pt x 393.47pt>
 File: Importancia DT.png Graphic file (type png)
 <use Importancia DT.png>
-Package pdftex.def Info: Importancia DT.png  used on input line 345.
+Package pdftex.def Info: Importancia DT.png  used on input line 391.
 (pdftex.def)             Requested size: 256.07251pt x 144.22473pt.
-<cpTree2.png, id=151, 731.73375pt x 441.65pt>
+<cpTree2.png, id=165, 731.73375pt x 441.65pt>
 File: cpTree2.png Graphic file (type png)
 <use cpTree2.png>
-Package pdftex.def Info: cpTree2.png  used on input line 357.
+Package pdftex.def Info: cpTree2.png  used on input line 403.
 (pdftex.def)             Requested size: 284.52644pt x 171.73064pt.
-<ROC DT Test 2.png, id=152, 350.30875pt x 339.2675pt>
+[8 <./ROC DT Test 1.png> <./Importancia DT.png>]
+<ROC DT Test 2.png, id=176, 350.30875pt x 339.2675pt>
 File: ROC DT Test 2.png Graphic file (type png)
 <use ROC DT Test 2.png>
-Package pdftex.def Info: ROC DT Test 2.png  used on input line 379.
+Package pdftex.def Info: ROC DT Test 2.png  used on input line 426.
 (pdftex.def)             Requested size: 170.71736pt x 165.33658pt.
-[7 <./cpTree1.png>]
-<c SVM Lineal.png, id=164, 751.80875pt x 428.60126pt>
+[9 <./cpTree2.png> <./ROC DT Test 2.png>]
+<c SVM Lineal.png, id=187, 751.80875pt x 428.60126pt>
 File: c SVM Lineal.png Graphic file (type png)
 <use c SVM Lineal.png>
-Package pdftex.def Info: c SVM Lineal.png  used on input line 401.
+Package pdftex.def Info: c SVM Lineal.png  used on input line 448.
 (pdftex.def)             Requested size: 170.70981pt x 97.32054pt.
-[8 <./ROC DT Test 1.png> <./Importancia DT.png>]
-<ROC SVM Lineal.png, id=175, 363.3575pt x 383.4325pt>
+<ROC SVM Lineal.png, id=188, 363.3575pt x 383.4325pt>
 File: ROC SVM Lineal.png Graphic file (type png)
 <use ROC SVM Lineal.png>
-Package pdftex.def Info: ROC SVM Lineal.png  used on input line 425.
+Package pdftex.def Info: ROC SVM Lineal.png  used on input line 473.
 (pdftex.def)             Requested size: 170.71706pt x 180.14894pt.
-<params SVM Radial.png, id=176, 598.235pt x 427.5975pt>
+<params SVM Radial.png, id=189, 598.235pt x 427.5975pt>
 File: params SVM Radial.png Graphic file (type png)
 <use params SVM Radial.png>
-Package pdftex.def Info: params SVM Radial.png  used on input line 439.
+Package pdftex.def Info: params SVM Radial.png  used on input line 487.
 (pdftex.def)             Requested size: 170.71782pt x 122.02313pt.
-[9 <./cpTree2.png> <./ROC DT Test 2.png>]
-<ROC SVM Radial.png, id=187, 345.29pt x 352.31625pt>
+<ROC SVM Radial.png, id=190, 345.29pt x 352.31625pt>
 File: ROC SVM Radial.png Graphic file (type png)
 <use ROC SVM Radial.png>
-Package pdftex.def Info: ROC SVM Radial.png  used on input line 463.
+Package pdftex.def Info: ROC SVM Radial.png  used on input line 512.
 (pdftex.def)             Requested size: 170.71622pt x 174.19011pt.
-[10 <./c SVM Lineal.png> <./ROC SVM Lineal.png> <./params SVM Radial.png>] [11 
-<./ROC SVM Radial.png>] (./Informe-Assigment-1.aux
+[10 <./c SVM Lineal.png>]
+<sensibility.png, id=201, 1405.25pt x 868.24374pt>
+File: sensibility.png Graphic file (type png)
+<use sensibility.png>
+Package pdftex.def Info: sensibility.png  used on input line 541.
+(pdftex.def)             Requested size: 341.42671pt x 210.95293pt.
+[11 <./ROC SVM Lineal.png> <./params SVM Radial.png>]
+<parametros.png, id=212, 1405.25pt x 868.24374pt>
+File: parametros.png Graphic file (type png)
+<use parametros.png>
+Package pdftex.def Info: parametros.png  used on input line 552.
+(pdftex.def)             Requested size: 284.51868pt x 175.7919pt.
+
+Overfull \hbox (49.64117pt too wide) in paragraph at lines 552--553
+[][] 
+ []
+
+[12 <./ROC SVM Radial.png> <./sensibility.png> <./parametros.png>]
+<roc5.jpg, id=224, 598.235pt x 281.05pt>
+File: roc5.jpg Graphic file (type jpg)
+<use roc5.jpg>
+Package pdftex.def Info: roc5.jpg  used on input line 592.
+(pdftex.def)             Requested size: 284.52971pt x 133.67166pt.
+[13 <./roc5.jpg>]
+<maconf5.jpg, id=232, 598.235pt x 291.0875pt>
+File: maconf5.jpg Graphic file (type jpg)
+<use maconf5.jpg>
+Package pdftex.def Info: maconf5.jpg  used on input line 620.
+(pdftex.def)             Requested size: 256.07674pt x 124.60109pt.
+
+Overfull \hbox (21.19923pt too wide) in paragraph at lines 620--621
+[][] 
+ []
+
+<roc6.png, id=233, 351.3125pt x 369.38pt>
+File: roc6.png Graphic file (type png)
+<use roc6.png>
+Package pdftex.def Info: roc6.png  used on input line 640.
+(pdftex.def)             Requested size: 170.7187pt x 179.49852pt.
+[14 <./maconf5.jpg> <./roc6.png>] (./Informe-Assigment-1.aux
 LaTeX Info: Redefining \. on input line 25.
 LaTeX Info: Redefining \% on input line 25.
 )
@@ -563,26 +633,27 @@ Package rerunfilecheck Info: File `Informe-Assigment-1.out' has not changed.
 (rerunfilecheck)             Checksum: 013A7869059EAD831717F3C4A57CBCCC;2126.
  ) 
 Here is how much of TeX's memory you used:
- 11816 strings out of 480539
- 173585 string characters out of 5901975
- 497922 words of memory out of 5000000
- 29197 multiletter control sequences out of 15000+600000
- 448715 words of font info for 65 fonts, out of 8000000 for 9000
+ 12003 strings out of 480539
+ 176671 string characters out of 5901975
+ 499164 words of memory out of 5000000
+ 29363 multiletter control sequences out of 15000+600000
+ 449080 words of font info for 66 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
  60i,9n,66p,289b,372s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/Users/pablo/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc}{/Users
 /pablo/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-mathit.enc}{/Users/pabl
-o/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}</Users/pablo/Library
-/TinyTeX/texmf-dist/fonts/type1/public/lm/lmbx10.pfb></Users/pablo/Library/Tiny
-TeX/texmf-dist/fonts/type1/public/lm/lmbx12.pfb></Users/pablo/Library/TinyTeX/t
-exmf-dist/fonts/type1/public/lm/lmmi10.pfb></Users/pablo/Library/TinyTeX/texmf-
-dist/fonts/type1/public/lm/lmr10.pfb></Users/pablo/Library/TinyTeX/texmf-dist/f
-onts/type1/public/lm/lmr12.pfb></Users/pablo/Library/TinyTeX/texmf-dist/fonts/t
-ype1/public/lm/lmr17.pfb>
-Output written on Informe-Assigment-1.pdf (11 pages, 533806 bytes).
+o/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-ts1.enc}{/Users/pablo/Librar
+y/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}</Users/pablo/Library/TinyTeX
+/texmf-dist/fonts/type1/public/lm/lmbx10.pfb></Users/pablo/Library/TinyTeX/texm
+f-dist/fonts/type1/public/lm/lmbx12.pfb></Users/pablo/Library/TinyTeX/texmf-dis
+t/fonts/type1/public/lm/lmmi10.pfb></Users/pablo/Library/TinyTeX/texmf-dist/fon
+ts/type1/public/lm/lmr10.pfb></Users/pablo/Library/TinyTeX/texmf-dist/fonts/typ
+e1/public/lm/lmr12.pfb></Users/pablo/Library/TinyTeX/texmf-dist/fonts/type1/pub
+lic/lm/lmr17.pfb>
+Output written on Informe-Assigment-1.pdf (14 pages, 1146092 bytes).
 PDF statistics:
- 262 PDF objects out of 1000 (max. 8388607)
- 209 compressed objects within 3 object streams
- 67 named destinations out of 1000 (max. 500000)
- 205 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 299 PDF objects out of 1000 (max. 8388607)
+ 232 compressed objects within 3 object streams
+ 78 named destinations out of 1000 (max. 500000)
+ 240 words of extra memory for PDF output out of 10000 (max. 10000000)
 
