@@ -195,19 +195,6 @@ Sí & 26                     & 80                     \\   \hline
 
 
 
-Además de esta matriz, vamos a utilizar el indicador de la curva ROC. A continuación vemos la gráfica de la curva ROC para el conjunto de test. El área bajo la curva tiene un valor de 0.8215 lo que no está mal.
-
-
-\begin{figure}
-\centering
-\includegraphics[width=50mm]{ROC DT Test 1.png}
-\caption{ROC DC Test 1}
-\end{figure} 
-
-
-\newpage
-
-
 ## Optimizada
 
 
@@ -238,7 +225,7 @@ Sí & 31                     & 78                    \\    \hline
 \caption{Matriz confusión DecisionTree2}
 \end{table}
 
-Además de esta matriz, vamos a utilizar el indicador de la curva ROC. A continuación vemos la gráfica de la curva ROC para el conjunto de test. El área bajo la curva tiene un valor de 0.8201 lo que es aceptable.
+Además de esta matriz, vamos a utilizar el indicador de la curva ROC. Y al igual que los Accurancy eran bastante similares, ocurre lo mismo con el indicador de la curva ROC. Porque para el modelo anterior el área bajo la curva tiene un valor de 0.8215. Y para este nuevo modelo tenemos un valor de del área bajo la curva de 0.8201, que veremos en la siguiente figura. Por todo esto podemos decir que los modelos son bastante similares. 
 
 \begin{figure}[htb]
 \centering
@@ -261,7 +248,7 @@ Veamos el barrido del parámetro C con este modelo:
 \caption{SVM Lineal parámetro}
 \end{figure}
 
-El parámetro *C* comentado anteriormente refleja el grado de flexibilidad que permite la separación de los puntos del modelo. A mayor *C*, mayor es el número de observaciones que pueden estar en el lado incorrecto de la separación. Mirando en el gráfico se puede ver que los puntos $C = 0.1$ y $C = 0.3$ generan los mismos valores de Accurancy, entorno a 0.78. Sin embargo, nos quedaremos con el primero de ellos, $C=0.1$.  Evaluando los resultados más de cerca, tenemos la matriz de confusión:
+El parámetro *C* comentado anteriormente refleja el grado de flexibilidad que permite la separación de los puntos del modelo. A mayor *C*, mayor es el número de observaciones que pueden estar en el lado incorrecto de la separación. Mirando en el gráfico se puede ver que los puntos $C = 0.1$ y $C = 0.3$ generan los mismos valores de Accurancy, entorno a 0.78. Sin embargo, nos quedaremos con el primero de ellos, $C=0.1$. Calculando los resultados en función del conjunto de test obtenemos un $Accurancy= 0.73$. Y evaluando los resultados más de cerca, tenemos la matriz de confusión:
 \begin{table}[htb]
 \centering
 \begin{tabular}{|l|l|l|}
@@ -273,13 +260,6 @@ Sí & 26                     & 72                    \\ \hline
 \caption{Matriz confusión SVM Lineal}
 \end{table}
 
-Estos resultados generan un $Accurancy= 0.73$. Además de esta matriz, vamos a utilizar el indicador de la curva ROC. A continuación vemos la gráfica de la curva ROC para el conjunto de test. El área bajo la curva tiene un valor de 0.819 lo que es aceptable.
-
-\begin{figure}[htb]
-\centering
-\includegraphics[width=60mm]{ROC SVM Lineal.png}
-\caption{ROC SVM Lineal}
-\end{figure} 
 
 
 
@@ -287,7 +267,7 @@ Estos resultados generan un $Accurancy= 0.73$. Además de esta matriz, vamos a u
 
 ## SVM Radial
 
-En este modelo no solo tenemos que modificar el parámetro C como ocurría en el SVM Lineal, sino que también tenemos que ver el parámetro Sigma. Para obtener una correcta configuración hemos establecido un rango de ambos parámetros y hemos realizado otro barrido. Lo vemos en la Figura 13.
+Analicemos ahora la versión mejorada del modelo anterior. En este modelo no solo tenemos que modificar el parámetro C como ocurría en el SVM Lineal, sino que también tenemos que ver el parámetro Sigma. Para obtener una correcta configuración hemos establecido un rango de ambos parámetros y hemos realizado otro barrido. Lo vemos en la Figura 13.
 
 \begin{figure}[htb]
 \centering
@@ -314,7 +294,7 @@ Además de esta matriz, vamos a utilizar el indicador de la curva ROC. A continu
 
 \begin{figure}[htb]
 \centering
-\includegraphics[width=60mm]{ROC SVM Radial.png}
+\includegraphics[width=50mm]{ROC SVM Radial.png}
 \caption{ROC SVM Radial}
 \end{figure} 
 
@@ -330,7 +310,7 @@ Los modelos de redes neuronales se basan en los hiperparámetros que señalan el
 
 En este modelo nuestro objetivo es obtener las variables clave. Por ello entrenamos nuestro modelo con todas las variables y nos sale un accuracy de 0.85 con un valor kappa de 0.7 Las variables más importantes de nuestro modelo son BODYMASSINDEX, AGE, SKINTHICKNESS, GLUCOSE y BLOODPRESS. Esto se puede observar en el análisis de sensibilidad de la imagen inferior.
 
-\begin{figure}
+\begin{figure}[htb]
 \centering
 \includegraphics[width=120mm]{sensibility}
 \caption{Análisis de sensibilidad}
@@ -356,7 +336,7 @@ Como en los modelos anteriores para ver si nuestro modelo no cae en la trampa de
 
 \begin{wrapfigure}{l}{0.45\textwidth}
 \centering
-\includegraphics[width=60mm]{curvarocrnopt}
+\includegraphics[width=50mm]{curvarocrnopt}
 \caption{Curvas ROC}
 \end{wrapfigure}
 
@@ -461,7 +441,7 @@ Para comparar los resultados únicamente hemos creado un modelo de Redes Neurona
 Aplicamos el mismo proceso que en los modelos anteriores realizando un barrido de los hiperparámetros similar. En la siguiente figura vemos esto:
 
 
-La configuración óptima para este modelo son $neuronas=12$ y $decay=1e-09$ De esta forma obtenemos un $Accurancy= $ para el conjunto de entrenamiento. Y evaluando el conjunto de Test, tenemos un resultado de $Accurancy= $. Si lo comparamos con los 2 modelos de Redes Neuronales anteriores vemos que se comparta bastante peor que ellos. 
+La configuración óptima para este modelo son $neuronas=12$ y $decay=1e-09$ De esta forma obtenemos un $Accurancy= 0.83$ para el conjunto de entrenamiento. Y evaluando el conjunto de Test, tenemos un resultado de $Accurancy= 0.79$. Si lo comparamos con los 2 modelos de Redes Neuronales anteriores vemos que se comparta bastante peor que ellos. 
 
 \begin{figure}[h]
 \centering

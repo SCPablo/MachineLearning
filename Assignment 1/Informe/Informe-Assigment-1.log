@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.23 (TeX Live 2022/dev) (preloaded format=pdflatex 2021.10.24)  25 OCT 2021 14:20
+This is pdfTeX, Version 3.141592653-2.6-1.40.23 (TeX Live 2022/dev) (preloaded format=pdflatex 2021.10.24)  25 OCT 2021 22:43
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -544,105 +544,94 @@ File: cpTree1.png Graphic file (type png)
 <use cpTree1.png>
 Package pdftex.def Info: cpTree1.png  used on input line 355.
 (pdftex.def)             Requested size: 199.16702pt x 120.6572pt.
-<ROC DT Test 1.png, id=154, 355.3275pt x 393.47pt>
-File: ROC DT Test 1.png Graphic file (type png)
-<use ROC DT Test 1.png>
-Package pdftex.def Info: ROC DT Test 1.png  used on input line 382.
-(pdftex.def)             Requested size: 142.26402pt x 157.5353pt.
-[7 <./cpTree1.png>]
-<Importancia DT.png, id=166, 698.61pt x 393.47pt>
+<Importancia DT.png, id=154, 698.61pt x 393.47pt>
 File: Importancia DT.png Graphic file (type png)
 <use Importancia DT.png>
-Package pdftex.def Info: Importancia DT.png  used on input line 396.
+Package pdftex.def Info: Importancia DT.png  used on input line 384.
 (pdftex.def)             Requested size: 256.07251pt x 144.22473pt.
-<cpTree2.png, id=167, 731.73375pt x 441.65pt>
+<cpTree2.png, id=155, 731.73375pt x 441.65pt>
 File: cpTree2.png Graphic file (type png)
 <use cpTree2.png>
-Package pdftex.def Info: cpTree2.png  used on input line 409.
+Package pdftex.def Info: cpTree2.png  used on input line 397.
 (pdftex.def)             Requested size: 284.52644pt x 171.73064pt.
-[8 <./ROC DT Test 1.png> <./Importancia DT.png>]
-<ROC DT Test 2.png, id=178, 350.30875pt x 339.2675pt>
+[7 <./cpTree1.png>]
+<ROC DT Test 2.png, id=168, 350.30875pt x 339.2675pt>
 File: ROC DT Test 2.png Graphic file (type png)
 <use ROC DT Test 2.png>
-Package pdftex.def Info: ROC DT Test 2.png  used on input line 438.
+Package pdftex.def Info: ROC DT Test 2.png  used on input line 430.
 (pdftex.def)             Requested size: 170.71736pt x 165.33658pt.
+[8 <./Importancia DT.png> <./cpTree2.png>]
 <c SVM Lineal.png, id=179, 751.80875pt x 428.60126pt>
 File: c SVM Lineal.png Graphic file (type png)
 <use c SVM Lineal.png>
-Package pdftex.def Info: c SVM Lineal.png  used on input line 458.
+Package pdftex.def Info: c SVM Lineal.png  used on input line 450.
 (pdftex.def)             Requested size: 256.08192pt x 145.99063pt.
-[9 <./cpTree2.png> <./ROC DT Test 2.png>]
-<ROC SVM Lineal.png, id=190, 363.3575pt x 383.4325pt>
-File: ROC SVM Lineal.png Graphic file (type png)
-<use ROC SVM Lineal.png>
-Package pdftex.def Info: ROC SVM Lineal.png  used on input line 489.
-(pdftex.def)             Requested size: 170.71706pt x 180.14894pt.
-[10 <./c SVM Lineal.png> <./ROC SVM Lineal.png>]
-<params SVM Radial.png, id=201, 598.235pt x 427.5975pt>
+[9 <./ROC DT Test 2.png> <./c SVM Lineal.png>]
+<params SVM Radial.png, id=190, 598.235pt x 427.5975pt>
 File: params SVM Radial.png Graphic file (type png)
 <use params SVM Radial.png>
-Package pdftex.def Info: params SVM Radial.png  used on input line 504.
+Package pdftex.def Info: params SVM Radial.png  used on input line 486.
 (pdftex.def)             Requested size: 256.07674pt x 183.03471pt.
-<ROC SVM Radial.png, id=202, 345.29pt x 352.31625pt>
+<ROC SVM Radial.png, id=191, 345.29pt x 352.31625pt>
 File: ROC SVM Radial.png Graphic file (type png)
 <use ROC SVM Radial.png>
-Package pdftex.def Info: ROC SVM Radial.png  used on input line 532.
-(pdftex.def)             Requested size: 170.71622pt x 174.19011pt.
-[11 <./params SVM Radial.png>]
-<sensibility.png, id=212, 1405.25pt x 868.24374pt>
+Package pdftex.def Info: ROC SVM Radial.png  used on input line 514.
+(pdftex.def)             Requested size: 142.26527pt x 145.1602pt.
+[10 <./params SVM Radial.png>]
+<sensibility.png, id=201, 1405.25pt x 868.24374pt>
 File: sensibility.png Graphic file (type png)
 <use sensibility.png>
-Package pdftex.def Info: sensibility.png  used on input line 561.
+Package pdftex.def Info: sensibility.png  used on input line 543.
 (pdftex.def)             Requested size: 341.42671pt x 210.95293pt.
-<parametros.png, id=213, 1405.25pt x 868.24374pt>
+[11 <./ROC SVM Radial.png> <./sensibility.png>]
+<parametros.png, id=211, 1405.25pt x 868.24374pt>
 File: parametros.png Graphic file (type png)
 <use parametros.png>
-Package pdftex.def Info: parametros.png  used on input line 572.
+Package pdftex.def Info: parametros.png  used on input line 554.
 (pdftex.def)             Requested size: 284.51868pt x 175.7919pt.
 
-Overfull \hbox (49.64117pt too wide) in paragraph at lines 572--573
+Overfull \hbox (49.64117pt too wide) in paragraph at lines 554--555
 [][] 
  []
 
-[12 <./ROC SVM Radial.png> <./sensibility.png>]
-<curvarocrnopt.png, id=223, 350.30875pt x 375.4025pt>
+<curvarocrnopt.png, id=212, 350.30875pt x 375.4025pt>
 File: curvarocrnopt.png Graphic file (type png)
 <use curvarocrnopt.png>
-Package pdftex.def Info: curvarocrnopt.png  used on input line 599.
-(pdftex.def)             Requested size: 170.71736pt x 182.9464pt.
-[13 <./parametros.png> <./curvarocrnopt.png>]
-<maconf5.jpg, id=234, 598.235pt x 291.0875pt>
+Package pdftex.def Info: curvarocrnopt.png  used on input line 581.
+(pdftex.def)             Requested size: 142.26447pt x 152.45534pt.
+[12 <./parametros.png> <./curvarocrnopt.png>]
+<maconf5.jpg, id=223, 598.235pt x 291.0875pt>
 File: maconf5.jpg Graphic file (type jpg)
 <use maconf5.jpg>
-Package pdftex.def Info: maconf5.jpg  used on input line 636.
+Package pdftex.def Info: maconf5.jpg  used on input line 618.
 (pdftex.def)             Requested size: 256.07674pt x 124.60109pt.
 
-Overfull \hbox (21.19923pt too wide) in paragraph at lines 636--637
+Overfull \hbox (21.19923pt too wide) in paragraph at lines 618--619
 [][] 
  []
 
-<roc6.png, id=235, 351.3125pt x 369.38pt>
+<roc6.png, id=224, 351.3125pt x 369.38pt>
 File: roc6.png Graphic file (type png)
 <use roc6.png>
-Package pdftex.def Info: roc6.png  used on input line 657.
+Package pdftex.def Info: roc6.png  used on input line 639.
 (pdftex.def)             Requested size: 170.7187pt x 179.49852pt.
-[14 <./maconf5.jpg> <./roc6.png>]
-Overfull \hbox (26.96098pt too wide) in paragraph at lines 684--709
+[13 <./maconf5.jpg> <./roc6.png>]
+Overfull \hbox (26.96098pt too wide) in paragraph at lines 666--691
  [] 
  []
 
-<comp.png, id=244, 1405.25pt x 868.24374pt>
+<comp.png, id=234, 1405.25pt x 868.24374pt>
 File: comp.png Graphic file (type png)
 <use comp.png>
-Package pdftex.def Info: comp.png  used on input line 716.
+Package pdftex.def Info: comp.png  used on input line 698.
 (pdftex.def)             Requested size: 256.06467pt x 158.21138pt.
-[15 <./comp.png>]
-<Comparativa NN.png, id=252, 749.80125pt x 390.45876pt>
+[14 <./comp.png>]
+<Comparativa NN.png, id=242, 749.80125pt x 390.45876pt>
 File: Comparativa NN.png Graphic file (type png)
 <use Comparativa NN.png>
-Package pdftex.def Info: Comparativa NN.png  used on input line 762.
+Package pdftex.def Info: Comparativa NN.png  used on input line 744.
 (pdftex.def)             Requested size: 256.07315pt x 133.35pt.
-[16 <./Comparativa NN.png>] (./Informe-Assigment-1.aux
+[15 <./Comparativa NN.png>] (./Informe-Assigment-1.aux
 LaTeX Info: Redefining \. on input line 25.
 LaTeX Info: Redefining \% on input line 25.
 )
@@ -650,13 +639,13 @@ Package rerunfilecheck Info: File `Informe-Assigment-1.out' has not changed.
 (rerunfilecheck)             Checksum: 45EE4DEA68E76B56E74C600636766985;2159.
  ) 
 Here is how much of TeX's memory you used:
- 12032 strings out of 480539
- 177216 string characters out of 5901975
+ 12015 strings out of 480539
+ 176880 string characters out of 5901975
  500168 words of memory out of 5000000
- 29384 multiletter control sequences out of 15000+600000
+ 29372 multiletter control sequences out of 15000+600000
  459316 words of font info for 69 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 60i,9n,66p,289b,369s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 60i,9n,66p,289b,363s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/Users/pablo/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-mathsy.enc}{/U
 sers/pablo/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}{/Users/pabl
 o/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc}{/Users/pablo/Library
@@ -670,10 +659,10 @@ blic/lm/lmr12.pfb></Users/pablo/Library/TinyTeX/texmf-dist/fonts/type1/public/l
 m/lmr17.pfb></Users/pablo/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmri
 10.pfb></Users/pablo/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmsy10.pf
 b>
-Output written on Informe-Assigment-1.pdf (16 pages, 1220692 bytes).
+Output written on Informe-Assigment-1.pdf (15 pages, 1166447 bytes).
 PDF statistics:
- 326 PDF objects out of 1000 (max. 8388607)
- 248 compressed objects within 3 object streams
- 82 named destinations out of 1000 (max. 500000)
- 250 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 316 PDF objects out of 1000 (max. 8388607)
+ 243 compressed objects within 3 object streams
+ 79 named destinations out of 1000 (max. 500000)
+ 240 words of extra memory for PDF output out of 10000 (max. 10000000)
 
