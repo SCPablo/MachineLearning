@@ -23,7 +23,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 Comenzamos cargando tanto los datos como las librerias que necesitaremos para el desarrollo de nuestros modelos. Tras ello hacemos una primera exploración rápida de estos a través de la tabla de R. 
 
-A continuación, lo primero que hacemos es ver cómo está estructurado nuestro conjunto de datos y nos damos cuenta de que todas las variables son de tipo numérico (int o num). Esto nos supone un problema para trabajar con los modelos ya que necesitamos que nuestra variable de salida (en este caso sera DIABETES) sea un factor. Por ello transformamos la variable DIABETES en factor.
+A continuación lo primero que hacemos es ver como está estructurado nuestro conjunto de datos y nos damos cuenta de que todas las variables son de tipo numérico (int o num). Esto nos supone un problema para trabajar con los modelos ya que necesitamos que nuestra variable de salida (en este caso será DIABETES) sea un factor. Por ello transformamos la variable DIABETES en factor.
 
 Tras este cambio, lo que haremos será hacer un summary de la tabla de datos con la finalidad de ver si esta tiene algun valor nulo (NA's). La función nos devuelve que no existe ningún NA, por ello podemos pasar a buscar valores atípicos dentro de nuestras variables.
 
@@ -31,7 +31,7 @@ Para encontrar los outliers lo primero que haremos será una representación gr�
 
 Tanto en la variable GLUCOSE como en la variable BODYMASSINDEX existen datos que toman el valor 0, lo cual es absolutamente imposible. Por ello, tendremos que decidir que hacer con ellos. A nuestro parecer existen tres posibles opciones, eliminar dichas observaciones (con la consecuente pérdida de información del resto de variables) o sustituirlas por alguna medida de tendencia central como puede ser la media o la mediana. Como no sabemos que opción nos dará un mejor resultado en nuestros modelos lo que haremos será hacer un modelo sencillo que enfrente a la variable salida con la variable a la que queremos evaluar que hacer con los valores atípicos (en nuestro caso dicho modelo será una regresión logística). Finalmente mirando los resultados de la tabla \ref{tablacommod} decidimos que los valores iguales a 0 de la variable GLUCOSE los sustituiremos por la mediana mientras que en BODYMASSINDEX lo haremos por la media. Cabe destacar que puede que los valores de accuracy sean más altos que los de la media o mediana pero estamos primando tener más información del resto de variables que tener un poco más de accuracy sobre una variable. 
 
-En el resto de variables hemos hecho el mismo proceso y toda la información de los modelos esta en la tabla \ref{tablacommod}. Si es cierto que hay que hacer especial hincapié en una de las variables, INSULIN. Esta tiene una gran cantidad de 0's que no aparecen como outliers (se debe a que la gran cantidad de 0's afecta a los valores de la media y cuantiles) en los boxplot pero que si que hacen la función de outliers. Debido a que el número de observaciones que tienen 0 en la variable INSULIN representa casi la mitad de la muestra es obvio que se descartará la opción de eliminar dichas observaciones, y por ende solo quedará la opción de sustituir las observaciones por la media o la mediana.
+En el resto de variables hemos hecho el mismo proceso y toda la información de los modelos está en la tabla \ref{tablacommod}. Si es cierto que hay que hacer especial hincapié en una de las variables, INSULIN. Esta tiene una gran cantidad de 0's que no aparecen como outliers (se debe a que la gran cantidad de 0's afecta a los valores de la media y cuantiles) en los boxplot pero que si que hacen la función de outliers. Debido a que el número de observaciones que tienen 0 en la variable INSULIN representa casi la mitad de la muestra es obvio que se descartará la opción de eliminar dichas observaciones, y por ende solo quedará la opción de sustituir las observaciones por la media o la mediana.
 
 \begin{center}
 \begin{table}[h]
@@ -135,10 +135,10 @@ El modelo KNN se basa en comparar cada uno de los datos con un número k de veci
 \caption{Valores de diferentes k}
 \end{wrapfigure}
 
-Para obtener el k más óptimo se realiza un barrido con diferentes k hasta obtener los mejores resultados En la figura de la derecha se puede observar el barrido del parámetro k. 
+Para obtener el k más óptimo se realiza un barrido con diferentes k hasta obtener los resultados más óptimos. En la figura de la derecha se puede observar el barrido del parámetro k. 
 
 
-Se puede observar que el valor de accurancy más alto se obtiene cuando el k=2. También podemos observar que el valor de k más alto que hemos probado es 40, porque se ve claramente que el accurancy tiene una línea descendente cuanto más alto es el k. Que el valor seccionado sea $k=2$ puede ocasionar un sobre entrenamiento y por ello vemos también el valor Kappa que en este caso es $\text{Kappa}=0.5225$.
+Se puede observar que el valor de accurancy más alto se obtiene cuando el k=2. También podemos observar que el valor de k más alto que hemos probado es 40, porque se ve claramente que el accuracy tiene una línea descendente cuanto más alto es el k. Que el valor seccionado sea $k=2$ puede ocasionar un sobre entrenamiento y por ello vemos también el valor Kappa que en este caso es $\text{Kappa}=0.5225$.
 
 Evaluando los resultados más de cerca, podemos calcular la matriz de confusión para los datos de test. Esta nos dará información importante como el accuracy de nuestro modelo en el test. Este nos da un accuracy de 0.715 lo cual no esta mal ya que su diferencia con el accuracy del modelo es relativamente pequeña.
 
@@ -166,13 +166,13 @@ Además de esta matriz, vamos a utilizar el indicador de la curva ROC. A continu
 
 # Árboles de decisión 
 
-El modelo de árboles de decisión consiste en realizar divisiones recursivas. Para ello se analiza la mejor variable para dividir el conjunto de datos y se van obteniendo diferentes ramificaciones que permiten clasificar cada uno de los datos. El número de divisiones que se ejecutan son los diferentes nodos del árbol. En estos modelos el hiperparámetro que se utiliza es uno llamado *cp* que sirve para penalizar a los árboles que tienen una altura mayor. Si este parámetro tuviera el valor 0, el árbol tendría un gran número de nodos y el modelo puede llegar a estar sobre entrenado.
-Por ello, realizaremos un barrido de este parámetro yendo desde 0 hasta 0.1 en pasos de 0.001.
+El modelo de árboles de decisión sigue un consiste en realizar divisiones recursivas. Para ello se analiza la mejor variable para dividir el conjunto de datos y se van obteniendo diferentes ramificaciones que permiten clasificar cada uno de los datos. El número de divisiones que se ejecutan son los diferentes nodos del árbol. En estos modelos el hiperparámetro que se utiliza es uno llamado cp que sirve para penalizar a los árboles que tienen una altura mayor. Si este parámetro tuviera el valor 0, el árbol tendría un gran número de nodos y muy probablemente el modelo estaría sobre entrenado.
+Por ello, realizaremos un barrido de este parámetro cp yendo desde 0 hasta 0.1 en pasos de 0.001.
 Además, entrenaremos 3 modelos diferentes que podemos ver a continuación.
 
 ## Caso general
 
-Este modelo se entrenará con todas las variables del conjunto de datos inicial. En la parte derecha se muestra el gráfico del accuracy variando el *cp*:
+Este modelo se entrenará con todas las variables del conjunto de datos inicial. En la parte derecha se muestra el gráfico del accuracy variando el cp:
 
 \begin{figure}[h]
 \centering
@@ -180,7 +180,7 @@ Este modelo se entrenará con todas las variables del conjunto de datos inicial.
 \caption{Accuracy y cp}
 \end{figure}
 
-Se puede ver que el valor más alto es $cp = 0.004$, que genera un $Accurancy=0.78$. Tras hacer la evaluación de los resultados, obtenemos que para el conjunto de test el $Accurancy=0.77$, muy parecido al conjunto de entrenamiento. Evaluando los resultados más de cerca, tenemos la matriz de confusión:
+Se puede ver que el valor más alto es $cp = 0.004$. Evaluando los resultados más de cerca, tenemos la matriz de confusión:
 
 \begin{table}[htb]
 \centering
@@ -195,17 +195,19 @@ Sí & 26                     & 80                     \\   \hline
 
 
 
-## Optimizada
 
+
+
+## Optimizada
 
 Pero además de los datos representados anteriormente, este modelo nos proporciona una tabla que indica qué variables son importantes. 
 \begin{figure}[htb]
 \centering
 \includegraphics[width=90mm]{Importancia DT.png}
-\caption{Importancia variables}
+\caption{Importancia DT}
 \end{figure}
 
-Podemos ver que las variables importantes son: *Glucose*, *Age*, *BodyMassIndex*, *Pedigreefunc*, *SkinThinckness* y *Pregnant.* Aunque algunas de ellas tienen más importancia que otras, vamos a coger estas 6 para crear un nuevo modelo. Y analicemos la Accurancy en función del hoperparámetro *cp*:
+Podemos ver que las variables importantes son: Glucose, Age, BodyMassIndex, Pedigreefunc, SkinThinckness y Pregnant. Aunque algunas de ellas tienen más importancia que otras, vamos a coger estas 6 para crear un nuevo modelo.  Y analicemos la Accurancy en función del hoperparámetro cp:
 
 \begin{figure}[htb]
 \centering
@@ -213,7 +215,7 @@ Podemos ver que las variables importantes son: *Glucose*, *Age*, *BodyMassIndex*
 \caption{Accurancy y cp}
 \end{figure}
 
-Se puede ver en la Figura 8 que el valor más alto es $cp = 0$, que genera un valor de $Accurancy=0.78$, muy parecido a los que generaba el modelo sin optimizar. Si evaluamos el conjunto de test, vemos que el $Acurrancy=0.77$, también muy parecido al anterior modelo. Por lo tanto, a pesar de que el parámetro $cp=0$ el modelo no parece estar sibreentrenado. Evaluando los resultados más de cerca, tenemos la matriz de confusión:
+Se puede ver que el valor más alto es $cp = 0$. Evaluando los resultados más de cerca, tenemos la matriz de confusión:
 \begin{table}[htb]
 \centering
 \begin{tabular}{|l|l|l|}
@@ -229,7 +231,7 @@ Además de esta matriz, vamos a utilizar el indicador de la curva ROC. Y al igua
 
 \begin{figure}[htb]
 \centering
-\includegraphics[width=60mm]{ROC DT Test 2.png}
+\includegraphics[width=50mm]{ROC DT Test 2.png}
 \caption{ROC DC Test 2}
 \end{figure} 
 
@@ -244,11 +246,13 @@ Veamos el barrido del parámetro C con este modelo:
 
 \begin{figure}[htb]
 \centering
-\includegraphics[width=90mm]{c SVM Lineal.png}
+\includegraphics[width=60mm]{c SVM Lineal.png}
 \caption{SVM Lineal parámetro}
 \end{figure}
 
+
 El parámetro *C* comentado anteriormente refleja el grado de flexibilidad que permite la separación de los puntos del modelo. A mayor *C*, mayor es el número de observaciones que pueden estar en el lado incorrecto de la separación. Mirando en el gráfico se puede ver que los puntos $C = 0.1$ y $C = 0.3$ generan los mismos valores de Accurancy, entorno a 0.78. Sin embargo, nos quedaremos con el primero de ellos, $C=0.1$. Calculando los resultados en función del conjunto de test obtenemos un $Accurancy= 0.73$. Y evaluando los resultados más de cerca, tenemos la matriz de confusión:
+
 \begin{table}[htb]
 \centering
 \begin{tabular}{|l|l|l|}
@@ -267,28 +271,28 @@ Sí & 26                     & 72                    \\ \hline
 
 ## SVM Radial
 
+
 Analicemos ahora la versión mejorada del modelo anterior. En este modelo no solo tenemos que modificar el parámetro C como ocurría en el SVM Lineal, sino que también tenemos que ver el parámetro Sigma. Para obtener una correcta configuración hemos establecido un rango de ambos parámetros y hemos realizado otro barrido. Lo vemos en la Figura 13.
+
 
 \begin{figure}[htb]
 \centering
-\includegraphics[width=90mm]{params SVM Radial.png}
+\includegraphics[width=60mm]{params SVM Radial.png}
 \caption{Params SVM Radial}
 \end{figure}
 
-Se puede ver que los diferentes valores de sigma convergen cuando C es grande. Por este motivo vamos a coger la línea que siempre está por encima y que representa el valor $sigma=450$ y $C=14.5$
-Evaluando los resultados del conjunto de test tenemos la matriz de confusión:
+Se puede ver que los diferentes valores de sigma convergen cuando C es grande. Por este motivo vamos a coger la línea que siempre está por encima y que representa el valor $sigma=450$ y $C=14.5$ Esta configuración genera una $Accurancy=085$ para el conjunto de test.
+Evaluando los resultados más de cerca, tenemos la matriz de confusión:
 \begin{table}[htb]
 \centering
 \begin{tabular}{|l|l|l|}
 \hline
    & \multicolumn{1}{c}{No} & \multicolumn{1}{c|}{Sí} \\    \hline
-No & 100                     & 23                     \\    \hline
-Sí & 0                     & 77                        \\ \hline
+No & 100                     & 30                     \\    \hline
+Sí & 0                     & 0                        \\ \hline
 \end{tabular}
 \caption{Matriz confusión SVM Radial}
 \end{table}
-
-Estos resultados generan un $Accurancy=0.85$, lo que mejora enormemente los resultados del modelo anterior SVM Lineal.
 
 Además de esta matriz, vamos a utilizar el indicador de la curva ROC. A continuación vemos la gráfica de la curva ROC para el conjunto de test.
 
@@ -298,7 +302,7 @@ Además de esta matriz, vamos a utilizar el indicador de la curva ROC. A continu
 \caption{ROC SVM Radial}
 \end{figure} 
 
-El área bajo la curva tiene un valor de 0.85 lo que bastante bueno.
+El área bajo la curva tiene un valor de 0.85 lo que bastante bueno. De hecho, es un poco mejor que en el modelo SVM Lineal, cuyo área bajo la curva es 0.819. Por todo esto, este nuevo modelo mejora al anterior.
 
 
 
@@ -321,7 +325,7 @@ Una vez obtenidas cuales son las variable más importante podemos pasar a optimi
 ## Optimizada
 
 \begin{wrapfigure}{r}{.5\textwidth}
-\includegraphics[width=100mm]{parametros}
+\includegraphics[width=90mm]{parametros}
 \caption{Elección de parámetros}
 \end{wrapfigure}
 
@@ -433,6 +437,7 @@ Haciendo enfoque en los resultados obtenidos, se puede ver que son relativamente
 
 
 
+
 # Parte Extra
 
 Por último, hemos creado un nuevo modelo modificando previamente el conjunto de datos. La modificación realizada consiste en tomar como variable categórica la variable *Pregnant* en lugar de tomarla como variable continua. De esta forma, hemos creado los siguientes grupos: 0 hijos, 1, 2, 3, 4 y 5 o más.
@@ -448,4 +453,5 @@ La configuración óptima para este modelo son $neuronas=12$ y $decay=1e-09$ De 
 \includegraphics[width=90mm]{Comparativa NN}
 \caption{Comparativa NN}
 \end{figure}
+
 
