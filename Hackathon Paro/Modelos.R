@@ -73,7 +73,7 @@ ggtsdisplay(fdata_diff_esta,lag.max = 100)
 
 sarima.fit <- Arima(fdata_ts,
                    order=c(1,1,0),
-                   seasonal = list(order=c(0,1,1), period=12),
+                   seasonal = list(order=c(2,1,1), period=12),
                    include.constant = FALSE)
 summary(sarima.fit) 
 coeftest(sarima.fit)
