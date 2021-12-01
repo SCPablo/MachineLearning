@@ -216,6 +216,7 @@ Podemos ver que las variables importantes son: Glucose, Age, BodyMassIndex, Pedi
 \end{figure}
 
 Se puede ver que el valor más alto es $cp = 0$. Evaluando los resultados más de cerca, tenemos la matriz de confusión:
+
 \begin{table}[htb]
 \centering
 \begin{tabular}{|l|l|l|}
@@ -227,13 +228,14 @@ Sí & 31                     & 78                    \\    \hline
 \caption{Matriz confusión DecisionTree2}
 \end{table}
 
-Además de esta matriz, vamos a utilizar el indicador de la curva ROC. Y al igual que los Accurancy eran bastante similares, ocurre lo mismo con el indicador de la curva ROC. Porque para el modelo anterior el área bajo la curva tiene un valor de 0.8215. Y para este nuevo modelo tenemos un valor de del área bajo la curva de 0.8201, que veremos en la siguiente figura. Por todo esto podemos decir que los modelos son bastante similares. 
 
-\begin{figure}[htb]
+\begin{wrapfigure}{r}{0.4\textwidth}
 \centering
-\includegraphics[width=50mm]{ROC DT Test 2.png}
-\caption{ROC DC Test 2}
-\end{figure} 
+\includegraphics[width=40mm]{ROC DT Test 2.png}
+\caption{ROC DT Test 2}
+\end{wrapfigure} 
+
+Además de esta matriz, vamos a utilizar el indicador de la curva ROC. Y al igual que los Accurancy eran bastante similares, ocurre lo mismo con el indicador de la curva ROC. Porque para el modelo anterior el área bajo la curva tiene un valor de 0.8215. Y para este nuevo modelo tenemos un valor de del área bajo la curva de 0.8201, que veremos en la siguiente figura. Por todo esto podemos decir que los modelos son bastante similares. 
 
 
 
@@ -322,6 +324,8 @@ En este modelo nuestro objetivo es obtener las variables clave. Por ello entrena
 
 Una vez obtenidas cuales son las variable más importante podemos pasar a optimizar nuestro modelo.
 
+\newpage
+
 ## Optimizada
 
 \begin{wrapfigure}{r}{.5\textwidth}
@@ -338,16 +342,17 @@ El modelo optimizado nos da un accuracy de 0.8325, lo cual esta bastante próxim
 
 Como en los modelos anteriores para ver si nuestro modelo no cae en la trampa del sobreentrenamiento calculemos las matrices de confusión, las cuales devolverán el accuracy de cada conjunto para poder compararlos.
 
+
+En el caso del conjunto de entrenamiento este presenta un accuracy de 0.9675 el cual es realmente alto y puede indicar que nos encontramos ante algún problema de overfitting. 
+
 \begin{wrapfigure}{l}{0.45\textwidth}
 \centering
 \includegraphics[width=50mm]{curvarocrnopt}
 \caption{Curvas ROC}
 \end{wrapfigure}
 
-En el caso del conjunto de entrenamiento este presenta un accuracy de 0.9675 el cual es realmente alto y puede indicar que nos encontramos ante algún problema de overfitting. 
-
-
 El accuracy del conjunto de test es de 0.765 lo cual es significativamente más pequeño que el de entrenamiento. Dicha diferencia no puede ser nada bueno y muy probablemente lo que ocurra es que nuestro modelo se ha sobreentrenado y por ende no va a generalizar bien.
+
 
 
 Por último, para poder comprobar el rendimiento del modelo, se representan las curvas ROC, calculándolas áreas bajo las curvas. En la imagen inferior podemos observar como para el entrenamiento la curva casi toca la esquina superior izquierda, mientras que en el test esta dista mucho de la anterior.
@@ -359,28 +364,35 @@ Podemos afirmar que nuestro modelo ha caido en el overfitting y no se podrá usa
 
 # Random Forest
 
-Como queriamos ir un poco más alla en el proyecto y la parte de modelos hemos decidido realizar un modelo que aún no hemos visto y que en si es una generalización de los arboles de decisión. El modelo en cuestión son los random forest que consisten en una gran muestra de arboles de decisión todos ellos entrenados con una muestra ligeramente diferente. A su vez también estableceremos una lista de valores de donde puede salir el hiperparametro de dicho modelo (el hiperparametro consiste en el número de variables muestreadas aleatoriamente como candidatas en cada división). Otro parametro que le meteremos es que el número de arboles sea 500. 
 
 \begin{wrapfigure}{r}{.5\textwidth}
 \includegraphics[width=90mm]{maconf5}
 \caption{Matriz de confusión}
 \end{wrapfigure}
 
-Tras entrenarlo con nuestro conjunto de entrenamiento el modelo nos devuelve un accuracy de 0.87875, lo cual es un valor bastante alto. A su vez el valor del número de variables muestreadas aleatoriamente óptimo es de 2. 
-
-
-Para saber si dicho modelo es un modelo correcto calcularemos las matrices de confusión. La matriz de confusión de los datos de entrenamiento no deja duda alguna, el modelo lo ha hecho a la perfección ya que tenemos un accuracy de 1. Ahora debemos mirar el valor del accuracy para los datos de test, donde si este tuviese una gran diferencia con el de los datos de entrenamiento evidenciaria que nos encontramos antes un caso de overfitting. El accuracy para los datos de test es de 0.87, lo cual dista un poco del accuracy de los datos de entrenamiento pero es un valor razonable para negar la existencia de overfitting. 
-
+Como queriamos ir un poco más alla en el proyecto y la parte de modelos hemos decidido realizar un modelo que aún no hemos visto y que en si es una generalización de los arboles de decisión. El modelo en cuestión son los random forest que consisten en una gran muestra de arboles de decisión todos ellos entrenados con una muestra ligeramente diferente. A su vez también estableceremos una lista de valores de donde puede salir el hiperparametro de dicho modelo (el hiperparametro consiste en el número de variables muestreadas aleatoriamente como candidatas en cada división). Otro parametro que le meteremos es que el número de arboles sea 500. 
 
 \begin{wrapfigure}{l}{.55\textwidth}
 \includegraphics[width=60mm]{roc6}
 \caption{Curva ROC Random Forest}
 \end{wrapfigure}
 
+Tras entrenarlo con nuestro conjunto de entrenamiento el modelo nos devuelve un accuracy de 0.87875, lo cual es un valor bastante alto. A su vez el valor del número de variables muestreadas aleatoriamente óptimo es de 2. 
+
+
+
+Para saber si dicho modelo es un modelo correcto calcularemos las matrices de confusión. La matriz de confusión de los datos de entrenamiento no deja duda alguna, el modelo lo ha hecho a la perfección ya que tenemos un accuracy de 1. Ahora debemos mirar el valor del accuracy para los datos de test, donde si este tuviese una gran diferencia con el de los datos de entrenamiento evidenciaria que nos encontramos antes un caso de overfitting. El accuracy para los datos de test es de 0.87, lo cual dista un poco del accuracy de los datos de entrenamiento pero es un valor razonable para negar la existencia de overfitting. 
+
+
+
 Cabe destacar que nuestro modelo falla principalmente en la detección de los negativos, ya que tiene una especificidad de 0.8 frente a una sensitividad de 0.94.
 
 
+
 Por último miraremos la curva ROC de los datos de test, ya que la de los datos de entrenamiento es obvio como va a ser al tener un accuracy de 1. En la imagen de la izquierda podemos observar como la curva ROC se acerca en gran cantidad a la esquina superior izquierda, lo que nos dice que nuestro modelo se ajusta bien y permite generalización. A su vez tenemos que el area bajo la curva (AUC) es de 0.94775, es decir, nuestro modelo generalizará bastante bien antes nuevos datos que no hayan sido evaluados.
+
+
+
 
 
 
@@ -430,6 +442,7 @@ Veamos la gráfica que nos muestra los diferentes accuracies de los modelos eval
 
 Viendo ambos elementos para comparar podemos afirmar que los modelos que mejor predicen para este tipo de datos son el modelo de random forest y el SVM radial.
 
+\newpage
 
 # Conclusiones
 
@@ -443,15 +456,17 @@ Haciendo enfoque en los resultados obtenidos, se puede ver que son relativamente
 Por último, hemos creado un nuevo modelo modificando previamente el conjunto de datos. La modificación realizada consiste en tomar como variable categórica la variable *Pregnant* en lugar de tomarla como variable continua. De esta forma, hemos creado los siguientes grupos: 0 hijos, 1, 2, 3, 4 y 5 o más.
 Para comparar los resultados únicamente hemos creado un modelo de Redes Neuronales para compararlo con los 2 que ya teníamos creados y evaluar si de esta forma obtenemos mejores resultados.
 
+\begin{wrapfigure}{r}{0.4\textwidth}
+\centering
+\includegraphics[width=70mm]{Comparativa NN}
+\caption{Comparativa NN}
+\end{wrapfigure}
+
 Aplicamos el mismo proceso que en los modelos anteriores realizando un barrido de los hiperparámetros similar. En la siguiente figura vemos esto:
 
 
 La configuración óptima para este modelo son $neuronas=12$ y $decay=1e-09$ De esta forma obtenemos un $Accurancy= 0.83$ para el conjunto de entrenamiento. Y evaluando el conjunto de Test, tenemos un resultado de $Accurancy= 0.79$. Si lo comparamos con los 2 modelos de Redes Neuronales anteriores vemos que se comparta bastante peor que ellos. 
 
-\begin{figure}[h]
-\centering
-\includegraphics[width=90mm]{Comparativa NN}
-\caption{Comparativa NN}
-\end{figure}
+
 
 
