@@ -1,0 +1,171 @@
+---
+title: "Assigment 2"
+author: "Álvaro Rodriguez y Pablo Sanz"
+date: "12/1/2021"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+
+
+
+# Presentación de los datos
+
+
+Los datos a tratar pertenecen al número de desempleados de España a lo largo de los años. Como se puede ver en representación inferior, podemos observar diferentes épocas que ha sufrido el país en su historia más reciente.
+
+Si empezamos por el extremo inferior que data sobre los inicios del año 2000, observamos que el empleo se mantiene más o menos constante en cuanto a tendencia, aunque se aprecia una gran estacionalidad según si estamos en los meses de invierno o verano. Este patrón se repite hasta el año 2008 donde con la gran crisis financiera mundial, el paro subió bruscamente situándose en más de 5.000.000 de personas en el año 2012.
+Pasado este momento, empieza a decrecer progresivamente observándose siempre aumentos y descensos según los meses de invierno o verano respectivamente hasta finales de 2019.
+
+En este momento, a raíz de la aparción del COVID-19, la serie rompe todos los esquemas, aumentando en muy pocos meses casi 1.000.000 de desempleados debido a la crisis sanitaria y a todas las restricciones impuestas. 
+Unos meses depués, estos altos niveles de desempleo empiezan a decrecer a gran ritmo hasta situarse en el momento actual donde el ritmo de bajada ha disminuido.
+
+
+
+```{r, include = FALSE, ECHO = FALSE}
+#Carga de liberias
+library(MLTools)
+library(fpp2)
+library(ggplot2)
+library(readxl)
+library(lmtest)  #contains coeftest function
+library(tseries) #contains adf.test function
+library(readr)
+library(tidyverse)
+```
+```{r, include = FALSE, ECHO = FALSE}
+fdata <- read_table2("UnemploymentSpain.dat")
+# Convert to time series object
+fdata_ts <- ts(fdata)
+y <- fdata_ts[,2]
+```
+
+```{r, echo = FALSE}
+autoplot(y)
+```
+
+# Predicción entregada
+
+En primer lugar explicaremos el proceso que nos llevó a dar como resultado que el paro en el mes de Novimembre es de *3.240.623*.
+
+## Análisis exploratorio
+
+Lo primero que hicimos tras ver los datos del paro fue ver si la serie es estacionaria en varianza. Esto se ve en el siguiente gráfico:
+
+```{r, echo = FALSE}
+BoxCox.lambda.plot(y,12)
+```
+
+Que refleja si es necesario realizar una transformación Box-Cox. Sin embargo, vemos que la línea azul no es muy creciente y que R-square no es muy alto (R-square=0.2419). Por lo tanto, no es necesario realizar una estabilización de varianza.
+
+
+
+## Seasonal ARIMA
+En primer lugar representamos la serie temporal junto con su ACF y PACF para inspeccionar la serie regular y estacional.
+Vemos que la serie necesita una diferenciación en la parte regular ya que el ACF dismunye progresivamente por el tiempo.
+
+```{r}
+ggtsdisplay(y,lag.max = 100)
+```
+
+Tras haber diferenciado en la parte regular, volvemos a mostrar el ACF y el PACF. Vemos que cada 12 puntos aparece un pico y por tanto deducimos que tenemos que diferenciar en la parte estacional también.
+```{r}
+Bz <- diff(y,differences = 1)
+ggtsdisplay(Bz,lag.max = 100)
+```
+
+Tras haber diferenciado en la parte regular y estacional vemos los siguientes ACF y PACF.
+```{r}
+arima.fit <- Arima(y,
+                   order=c(0,1,0),
+                   seasonal = list(order=c(0,1,0),period=12),
+                   include.constant = FALSE)
+ggtsdisplay(residuals(arima.fit),lag.max = 100)
+```
+
+Podemos ver ahora que la parte estacional ha mejorado porque ya no se observan picos en los puntos 12, 24, 36,... Sin embargo, observamos cómo el ACF va decreciendo progresivamente y en PACF hay un grande en el punto 12, por lo que aplicamos un AR(1)
+```{r}
+arima.fit <- Arima(y,
+                   order=c(0,1,0),
+                   seasonal = list(order=c(1,1,0),period=12),
+                   include.constant = FALSE)
+ggtsdisplay(residuals(arima.fit),lag.max = 100)
+```
+Ahora podemos ver que la parte estacional parece ajustada más o menos, sin embargo; la parte regular quiere una corrección. Como va decreciendo poco a poco en ACF y vemos un gran valor en el PACF, aplicamos un AR(1)
+```{r}
+arima.fit <- Arima(y,
+                   order=c(1,1,0),
+                   seasonal = list(order=c(1,1,0),period=12),
+                   include.constant = FALSE)
+ggtsdisplay(residuals(arima.fit),lag.max = 100)
+summary(arima.fit) # summary of training errors and estimated coefficients
+coeftest(arima.fit) # statistical significance of estimated coefficients
+autoplot(arima.fit) # root plot
+```
+No obstante, vemos que los residuos no son perfectamente ruido blanco en la parte estacional, por este motivo intentamos ajustarlo con un MA(2).
+```{r}
+arima.fit <- Arima(y,
+                   order=c(1,1,0),
+                   seasonal = list(order=c(1,1,2),period=12),
+                   include.constant = FALSE)
+ggtsdisplay(residuals(arima.fit),lag.max = 100)
+
+```
+Comprobamos definitivamente los residuos
+```{r}
+CheckResiduals.ICAI(arima.fit, bins = 100)
+summary(arima.fit) # summary of training errors and estimated coefficients
+coeftest(arima.fit) # statistical significance of estimated coefficients
+autoplot(arima.fit) # root plot
+```
+Vemos que el ruido generado es ruido blanco, que todas las coeficientes del modelo son relevantes y que generan unos p-valores pequeños. Además, comprobamos que el modelo genera datos predichos que se adaptan bien a los datos reales. Eso lo podemos ver en el siguiente gráfico:
+
+
+```{r}
+autoplot(y, series = "Real")+
+  forecast::autolayer(arima.fit$fitted, series = "Fitted")
+```
+Como podemos observar, la curva azul y la roja son muy parecidas y se adapta bien a todos los cambios. Lo que es muy satisfactorio. Por ello predecimos obteniendo el resultado enviado para el assigment
+
+
+```{r}
+y_est <- forecast(arima.fit, h=1)
+y_est[("mean")]
+```
+
+
+### Otros modelos intentados
+
+Probamos también a crear otros modelos. Se puede observar también, que después de diferenciar una vez la parte estacionaria, los PACF van disminuyendo de forma senoidal, por lo que añadimos un MA(1). Tras ello, tenemos que ajustar la parte regular, añadiendo RA(2) y un MA(1).
+
+```{r}
+arima.fit <- Arima(y,
+                   order=c(2,1,1),
+                   seasonal = list(order=c(0,1,1),period=12),
+                   include.constant = FALSE)
+coeftest(arima.fit) # statistical significance of estimated coefficients
+CheckResiduals.ICAI(arima.fit, bins = 100)
+summary(arima.fit) # summary of training errors and estimated coefficients
+```
+```{r}
+autoplot(y, series = "Real")+
+  forecast::autolayer(arima.fit$fitted, series = "Fitted")
+```
+Sin embargo, estos resultados a pesar de que generan ruido blanco y la mayoría de variables aparecen muy significativas, generaba resultados ligeramente peores que los del modelo anterior. Por este motivo seleccionamos el anterior.
+
+```{r}
+y_est <- forecast(arima.fit, h=1)
+y_est[("mean")]
+```
+
+
+
+
+
