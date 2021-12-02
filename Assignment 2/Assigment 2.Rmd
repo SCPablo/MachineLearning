@@ -169,3 +169,89 @@ y_est[("mean")]
 
 
 
+
+# Nuevos modelos
+
+Para buscar una predicción más acertada a la realidad, hemos creado varios modelos nuevos. La línea de trabajo que hemos adoptado ha sido analizar la serie temporal después de la crisis de 2008, es decir; cuando los datos del paro empiezan a decrecer. De esta forma intentamos conseguir un modelo que no esté mal influido por los datos previos donde se producía un aumento del paro. 
+
+```{r, include = FALSE, ECHO = FALSE}
+fdata_corto <- read_table2("UnemploymentSpain.dat")
+# Convert to time series object
+fdata_ts_corto <- ts(fdata_corto[147:250,])
+y_corto <- fdata_ts_corto[,2]
+```
+
+```{r, echo = FALSE}
+autoplot(y_corto)
+```
+Una vez tenemos estos datos, empezamos procediendo de igual forma. Analizamos si la serie es estacionaria en varianza.
+```{r, echo = FALSE}
+BoxCox.lambda.plot(y_corto,12)
+```
+Que como se puede ver lo es ya que la línea azul es práctiacmente horizontal y R-squared = 0.001. Por lo tanto, no es necesario realizar una estabilización de varianza.
+
+## Seasonal Arima
+Empezamos por tanto representando la serie temporal junto con su ACF y PACF para inspeccionar la serie regular y estacional
+
+```{r}
+ggtsdisplay(y_corto,lag.max = 100)
+```
+
+
+Vemos que la serie necesita una diferenciación en la parte regular ya que el ACF dismunye progresivamente por el tiempo y volvemos a mostrar el ACF y el PACF
+
+```{r}
+Bz <- diff(y_corto,differences = 1)
+ggtsdisplay(Bz,lag.max = 100)
+```
+Vemos que cada 12 puntos aparece un pico y por tanto deducimos que tenemos que diferenciar en la parte estacional también.
+
+```{r}
+arimaCorto.fit <- Arima(y_corto,
+                   order=c(0,1,0),
+                   seasonal = list(order=c(0,1,0),period=12),
+                   include.constant = FALSE)
+ggtsdisplay(residuals(arimaCorto.fit),lag.max = 100)
+```
+
+
+Ahora vemos que en el punto 12, el primero de la parte estacional se produce un residuo significativo. Como estos residous van decreciendo exponencialmente, aplicamos un RA(1) y volvemos a representar los ACF y PACF.
+```{r}
+arimaCorto.fit <- Arima(y_corto,
+                   order=c(0,1,0),
+                   seasonal = list(order=c(1,1,0),period=12),
+                   include.constant = FALSE)
+
+ggtsdisplay(residuals(arimaCorto.fit),lag.max = 100)
+```
+Ahora podemos ver que la parte estacional parece ajustada más o menos, sin embargo; la parte regular quiere una corrección. Como va decreciendo poco a poco en ACF y vemos un gran valor en el PACF, aplicamos un AR(1). Comprobamos los residuos.
+```{r}
+arimaCorto.fit <- Arima(y_corto,
+                   order=c(1,1,0),
+                   seasonal = list(order=c(1,1,0),period=12),
+                   include.constant = FALSE)
+
+```
+```{r}
+CheckResiduals.ICAI(arimaCorto.fit, bins = 100)
+summary(arimaCorto.fit) # summary of training errors and estimated coefficients
+coeftest(arimaCorto.fit) # statistical significance of estimated coefficients
+
+autoplot(arimaCorto.fit) # root plot
+```
+```{r}
+autoplot(y_corto, series = "Real")+
+  forecast::autolayer(arimaCorto.fit$fitted, series = "Fitted")
+```
+```{r}
+y_est <- forecast(arimaCorto.fit, h=1)
+y_est[("mean")]
+```
+
+
+
+
+
+
+
+
