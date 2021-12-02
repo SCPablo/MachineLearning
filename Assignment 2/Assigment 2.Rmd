@@ -143,17 +143,20 @@ y_est[("mean")]
 
 ### Otros modelos intentados
 
-Probamos también a crear otros modelos. Se puede observar también, que después de diferenciar una vez la parte estacionaria, los PACF van disminuyendo de forma senoidal, por lo que añadimos un MA(1). Tras ello, tenemos que ajustar la parte regular, añadiendo RA(2) y un MA(1).
+Probamos también a crear otros modelos. Partimos de la base de haber diferenciado una vez tanto la parte estacionaria como la regular. Vemos que os ACF van disminuyendo de forma senoidal en la parte estacionaria, por lo que añadimos un MA(1). Tras ello, tenemos que ajustar la parte regular, añadiendo RA(2) y un MA(1).
 
 ```{r}
 arima.fit <- Arima(y,
                    order=c(2,1,1),
                    seasonal = list(order=c(0,1,1),period=12),
                    include.constant = FALSE)
+ggtsdisplay(residuals(arima.fit),lag.max = 100)
 coeftest(arima.fit) # statistical significance of estimated coefficients
 CheckResiduals.ICAI(arima.fit, bins = 100)
 summary(arima.fit) # summary of training errors and estimated coefficients
 ```
+
+
 ```{r}
 autoplot(y, series = "Real")+
   forecast::autolayer(arima.fit$fitted, series = "Fitted")
@@ -228,8 +231,9 @@ Ahora podemos ver que la parte estacional parece ajustada más o menos, sin emba
 ```{r}
 arimaCorto.fit <- Arima(y_corto,
                    order=c(1,1,0),
-                   seasonal = list(order=c(1,1,0),period=12),
-                   include.constant = FALSE)
+                   seasonal = list(order=c(1,2,0),period=12),
+                   include.constant = FALSE, 
+                   method="ML")
 
 ```
 ```{r}
