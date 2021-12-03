@@ -282,28 +282,25 @@ Empezamos por tanto representando la serie temporal junto con su ACF y PACF para
 ggtsdisplay(y_corto,lag.max = 100)
 ```
 
+Vemos que la serie necesita una diferenciación en la parte regular ya que el ACF dismunye progresivamente por el tiempo y volvemos a mostrar el ACF y el PACF.
 
-----------------------------
-
-
-Vemos que la serie necesita una diferenciación en la parte regular ya que el ACF dismunye progresivamente por el tiempo y volvemos a mostrar el ACF y el PACF
-
-```{r, echo = FALSE, warning=FALSE, message=FALSE}
+```{r, echo = FALSE, warning=FALSE, message=FALSE,fig.align='center', fig.dim=c(5,3), fig.cap='Modelo tras diff'}
 Bz_corto <- diff(y_corto,differences = 1)
 ggtsdisplay(Bz_corto,lag.max = 100)
 ```
 
+\newpage
+
 Vemos que cada 12 puntos aparece un pico y por tanto deducimos que tenemos que diferenciar en la parte estacional también.
 
-```{r, echo = FALSE, warning=FALSE, message=FALSE}
+```{r, echo = FALSE, warning=FALSE, message=FALSE, fig.align='center', fig.dim=c(5,3), fig.cap='Modelo tras diff estacional'}
 Bz_corto_s <- diff(Bz_corto, lag = 12, differences = 1)
 ggtsdisplay(Bz_corto_s, lag.max = 65)
 ```
 
+Ahora vemos que en el punto 12, el primero de la parte estacional se produce un residuo significativo, a su vez también observamos que en el PACF se genera un coeficiente significativo en el número 12. Por ello, aplicamos un RA(1) y volvemos a representar los ACF y PACF para poder ajustar la parte regular.
 
-Ahora vemos que en el punto 12, el primero de la parte estacional se produce un residuo significativo. Como estos residous van decreciendo exponencialmente, aplicamos un RA(1) y volvemos a representar los ACF y PACF.
-
-```{r, echo = FALSE, warning=FALSE, message=FALSE}
+```{r, echo = FALSE, warning=FALSE, message=FALSE, fig.align='center', fig.dim=c(5,3), fig.cap='Modelo parte estacional'}
 arimaCorto.fit <- Arima(y_corto,
                         order=c(0,1,0),
                         seasonal = list(order=c(1,1,0),period=12),
@@ -311,39 +308,48 @@ arimaCorto.fit <- Arima(y_corto,
 ggtsdisplay(residuals(arimaCorto.fit),lag.max = 100)
 ```
 
-Ahora podemos ver que la parte estacional parece ajustada más o menos, sin embargo; la parte regular necesita una corrección. Como va decreciendo poco a poco en ACF y vemos un gran valor en el PACF, aplicamos un proceso AR(1). Comprobamos los residuos.
+Observamos que hay dos coeficientes bastante significativos, uno en el ACF y otro en el PACF por ello aplicaremos conjuntamente un AM(1) y un AR(1).
 
-```{r, echo = FALSE, warning=FALSE, message=FALSE}
+\newpage
+
+
+```{r, echo = FALSE, warning=FALSE, message=FALSE,fig.align='center', fig.dim=c(5,3), fig.cap='Modelo final'}
 arimaCorto.fit <- Arima(y_corto,
-                        order=c(1,1,0),
-                        seasonal = list(order=c(1,2,0),period=12),
-                        include.constant = FALSE, 
-                        method="ML")
+                        order=c(1,1,1),
+                        seasonal = list(order=c(1,1,0),period=12),
+                        include.constant = FALSE)
 ggtsdisplay(residuals(arimaCorto.fit),lag.max = 100)
 ```
+
 Ahora miraremos un resumen de nuestro modelo junto con la significiación de los coeficientes.
 
 ```{r, echo = FALSE, warning=FALSE, message=FALSE}
 summary(arimaCorto.fit)
 coeftest(arimaCorto.fit) 
 ```
+
+
 Tras ello estudiaremos y evaluaremos los residuos generados por nuestro modelo.
 
-```{r, echo = FALSE, warning=FALSE, message=FALSE}
-CheckResiduals.ICAI(arimaCorto.fit, bins = 100)
+```{r, echo = FALSE, warning=FALSE, message=FALSE, fig.align='center', fig.dim=c(5,3), fig.cap='Revisión Residuos'}
+CheckResiduals.ICAI(arimaCorto.fit, bins = 10)
 ```
+
 Tras ello miramos las inversas de las raices para comprobar que nuestro proceso es estacionario.
 
-```{r, echo = FALSE, warning=FALSE, message=FALSE}
+```{r, echo = FALSE, warning=FALSE, message=FALSE,fig.align='center', fig.cap='Inversas de raices', fig.dim=c(4,4)}
 autoplot(arimaCorto.fit) # root plot
 ```
 
 Por ultimo vamos a comparar que tal ajusta nuestro modelo a la serie temporal sobre la que hemos trabajado. 
 
-```{r, echo = FALSE, warning=FALSE, message=FALSE}
+\newpage
+
+```{r, echo = FALSE, warning=FALSE, message=FALSE, fig.align='center', fig.dim=c(6,4), fig.cap='Comparación Modelaje '}
 autoplot(y_corto, series = "Real")+
   forecast::autolayer(arimaCorto.fit$fitted, series = "Fitted")
 ```
+
 
 Y también veremos la predicción que nos da nuestro modelo para este mes.
 
@@ -353,11 +359,13 @@ y_est
 ```
 
 
-## Regresión Dinamica (Primera idea)
+## 3.2. Regresión Dinámica
 
 En este apartado lo que trataremos de hacer será realizar un modelo de regresión dinámica para poder predecir el paro de noviembre.
 
 Para ello vamos a crear un nuevo conjunto de datos, donde tengamos la variable COVID donde el 0 indica que no fue periodo COVID y el 1 indica periodo COVID. Además ampliaremos el periodo COVID hasta hoy en día (como experimento). A su vez para ver mejor la gráfica inicial lo que vamos a hacer es expresar el paro en millones, por tanto un valor de 3 representa 3000000.
+
+\newpage
 
 ```{r, echo = FALSE, warning=FALSE, message=FALSE}
 fdata2 <- fdata
@@ -367,6 +375,9 @@ fdata2  <- fdata2 %>%
   mutate(TOTAL = TOTAL /1000000) %>%
   select(-indice,-DATE)
 fdata2_ts <- ts(fdata2)
+```
+
+```{r echo = FALSE, warning=FALSE, message=FALSE, fig.align='center', fig.dim=c(5.5,3.5), fig.cap='Gráfico de datos '}
 autoplot(fdata2_ts)
 ```
 
@@ -387,14 +398,19 @@ TF.fit <- arima(y,
 coeftest(TF.fit)
 ```
 
+Obtenemos que una parte considerable de nuestros coeficientes son significantes. 
+
 Tras ello pasamos a ver los errores, donde en caso de no ser estacionarios tendremos que diferenciar para conseguir que sea estacionario.
 
-```{r, echo = FALSE, warning=FALSE, message=FALSE}
+\newpage
+
+```{r, echo = FALSE, warning=FALSE, message=FALSE, fig.align='center', fig.dim=c(5,3), fig.cap='Estudio de los errores'}
 TF.RegressionError.plot(y,x,TF.fit,lag.max = 200)
 ```
+
 Es bastante claro que los errores no son estacionarios, por tanto diferenciaremos.
 
-```{r, echo = FALSE, warning=FALSE, message=FALSE}
+```{r, echo = FALSE, warning=FALSE, message=FALSE, fig.align='center', fig.dim=c(5,3), fig.cap='Estudio de los errores'}
 TF.fit <- arima(y,
                 order=c(1,1,0),
                 seasonal = list(order=c(1,1,0),period=12),
@@ -404,23 +420,27 @@ TF.fit <- arima(y,
                 method="ML")
 TF.RegressionError.plot(y,x,TF.fit,lag.max = 50)
 ```
+
+
 Tras diferenciar tanto la parte regular como la estacional ya obtenemos unos errores que son estacionarios (o en gran medida).
 
 A continuación lo que haremos será identificar los coeficientes de nuestro modelo.
 
-```{r, echo = FALSE, warning=FALSE, message=FALSE}
-TF.Identification.plot(x,TF.fit)
+```{r, echo = FALSE, warning=FALSE, message=FALSE, fig.align='center', fig.dim=c(5,3), fig.cap='Estimación de coefs'}
+a =TF.Identification.plot(x,TF.fit)
 ```
-Para el valor de **b** lo que haremos será ver cuantos coeficientes no significativo hay antes del primer coeficientes significativo, que en nuestro caso será el primero. Por tanto tendremos que b = 0. Para r lo que haremos será ver cuantos coeficientes significativos desde el primero (no incluido) hay hasta que aparece el primer coeficiente no significativo, que en nuestro caso es 3. Por último para ajustar s miramos el comportamiento de los coeficientes, donde se puede ver que la caida es de tipo exponencial, por tanto tomamos s igual a 1.
+
+Para el valor de b lo que haremos será ver cuantos coeficientes no significativo hay antes del primer coeficientes significativo, que en nuestro caso será el primero. Por tanto tendremos que b = 0. Para r lo que haremos será ver cuantos coeficientes significativos desde el primero (no incluido) hay hasta que aparece el primer coeficiente no significativo, que en nuestro caso es 3. Por último para ajustar s miramos el comportamiento de los coeficientes, donde se puede ver que la caida es de tipo exponencial, por tanto tomamos s igual a 1.
 
 Tras realizar este ajuste lo que haremos será ajustar los ordenes de las partes estacional y regular. Esto lo haremos con los errores que hemos visto antes.
 
-```{r, echo = FALSE, warning=FALSE, message=FALSE}
+```{r, echo = FALSE, warning=FALSE, message=FALSE, fig.align='center', fig.dim=c(5,3), fig.cap='Estudio de los errores'}
 TF.RegressionError.plot(y,x,TF.fit,lag.max = 50)
 ```
+
 Podemos ver que la gráfica ACF oscila y va decreciendo poco a poco, por lo que nos encontramos ante un proceso autorregresivo. En la parte regular tomamos un proceso AR(1) junto con un AM(1).
 
-Ahora volvemos a realizar nuestro modelo pero ya con los coeficientes estimados.
+Ahora volvemos a realizar nuestro modelo pero ya con los coeficientes estimados y obtenemos una serie de métricas.
 
 ```{r, echo = FALSE, warning=FALSE, message=FALSE}
 xlag = Lag(x,0)   # b
@@ -443,40 +463,44 @@ coeftest(arima.fit)
 
 Lo primero que miraremos serán los residuos de nuestro modelo, donde miraremos si estos son ruido blanco.
 
-```{r, echo = FALSE, warning=FALSE, message=FALSE}
+\newpage
+
+
+```{r, echo = FALSE, warning=FALSE, message=FALSE,  fig.align='center', fig.dim=c(5,3), fig.cap='Estudio de los errores'}
 CheckResiduals.ICAI(arima.fit)
 ```
+
 
 A pesar de que un coeficiente salga un poco de la banda de confianza podemos asumir que nuestro ruido es un ruido blanco.
 
 Veamos el gráfico CCF para comprobar correlaciones entre coeficientes.
 
-```{r, echo = FALSE, warning=FALSE, message=FALSE}
+```{r, echo = FALSE, warning=FALSE, message=FALSE, fig.align='center', fig.dim=c(5,3), fig.cap='Gráfico CCF'}
 res <- residuals(arima.fit)
 res[is.na(res)] <- 0
 ccf(y = res, x = x)
 ```
 
+
 Por último vamos a ver que tal ajusta nuestro modelo la serie temporal sobre la que hemos estado trabajando.
 
 
-```{r, echo = FALSE, warning=FALSE, message=FALSE}
+```{r, echo = FALSE, warning=FALSE, message=FALSE, fig.align='center', fig.dim=c(5,3), fig.cap='Diferencia Modelaje'}
 # Check fitted
 autoplot(y, series = "Real")+
   forecast::autolayer(fitted(arima.fit), series = "Fitted")
 ```
 Vemos que nuestro modelo ajusta bastante bien la serie temporal sobre la que hemos trabajado. Si es cierto que le cuesta algo más los cambios bruscos o los picos exagerados en poco tiempo. 
 
-## Regresión Dinámica con Recorte de Tiempo
+\newpage
 
+# 3. Comparación modelos
 
+Otra forma de comparar los modelos es a través de sus predicciones y modelado de la serie temporal.
 
-
-
-
-
-
-
-
-
-
+```{r, echo = FALSE, warning=FALSE, message=FALSE, fig.align='center', fig.dim=c(6,4), fig.cap='Diferencia Modelaje'}
+# Check fitted
+autoplot(y, series = "Real")+
+  forecast::autolayer(fitted(sarima.fit), series = "Fitted")+
+  forecast::autolayer(fitted(sarima2.fit), series = "Fitted")
+```

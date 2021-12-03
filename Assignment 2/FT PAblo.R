@@ -10,7 +10,7 @@ library(Hmisc) # for computing lagged variables
 
 
 ## Load dataset -------------------------------------------------------------------------------------------------------
-fdata <- read.table("Assignment 2/datosCovid.txt",header = TRUE, sep = "")
+fdata <- read.table("./datosCovid.txt",header = TRUE, sep = "")
 colnames(fdata) <- c("DATE","TOTAL")
 # Convert to time series object
 fdata_ts <- ts(fdata[147:250,], frequency = 12, start = 2001)
@@ -29,7 +29,7 @@ TF.fit <- arima(y,
                 order=c(1,0,0),
                 seasonal = list(order=c(0,0,0),period=12),
                 xtransf = x,
-                transfer = list(c(0,9)), #List with (r,s) orders
+                transfer = list(c(0,7)), #List with (r,s) orders
                 include.mean = TRUE
 )
 summary(TF.fit) # summary of training errors and estimated coefficients
@@ -43,7 +43,7 @@ TF.fit <- arima(y,
                 order=c(1,1,0),
                 seasonal = list(order=c(0,0,0),period=12),
                 xtransf = x,
-                transfer = list(c(0,9)), #List with (r,s) orders
+                transfer = list(c(0,7)), #List with (r,s) orders
                 include.mean = TRUE
 )
 summary(TF.fit) # summary of training errors and estimated coefficients
@@ -56,7 +56,7 @@ TF.fit <- arima(y,
                 order=c(1,1,0),
                 seasonal = list(order=c(0,1,0),period=12),
                 xtransf = x,
-                transfer = list(c(0,9)), #List with (r,s) orders
+                transfer = list(c(0,7)), #List with (r,s) orders
                 include.mean = TRUE
 )
 summary(TF.fit) # summary of training errors and estimated coefficients
@@ -69,10 +69,10 @@ TF.RegressionError.plot(y,x,TF.fit,lag.max = 100)
 
 #Vemos que ya se ha corregido los errores pero sigue apareciendo un decrecimiento exponencial en forma senoidal por lo que volvemos a diferenciar en la parte regular
 TF.fit <- arima(y,
-                order=c(1,2,1),
-                seasonal = list(order=c(1,1,0),period=12),
-                xtransf = lag(x, 0),
-                transfer = list(c(1,1)), #List with (r,s) orders
+                order=c(1,2,0),
+                seasonal = list(order=c(0,1,0),period=12),
+                xtransf = x,
+                transfer = list(c(0,7)), #List with (r,s) orders
                 include.mean = TRUE,
                 method = "ML"
 )
@@ -82,6 +82,17 @@ coeftest(TF.fit) # statistical significance of estimated coefficients
 TF.RegressionError.plot(y,x,TF.fit,lag.max = 200)
 TF.Identification.plot(x,TF.fit)
 CheckResiduals.ICAI(TF.fit)
+
+xlag = Lag(x,0)   # b
+xlag[is.na(xlag)]=0
+TF.fit <- arima(y,
+                order=c(1,2,0),
+                seasonal = list(order=c(0,1,0),period=12),
+                xtransf = xlag,
+                transfer = list(c(3,1)), #List with (r,s) orders
+                include.mean = TRUE,
+                method = "ML"
+)
 
 
 autoplot(y, series = "Real")+
