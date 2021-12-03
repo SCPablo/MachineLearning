@@ -257,7 +257,7 @@ y_est
 Para buscar una predicción más acertada a la realidad, hemos creado varios modelos nuevos. La línea de trabajo que hemos adoptado ha sido analizar la serie temporal después de la crisis de 2008, es decir; cuando los datos del paro empiezan a decrecer. De esta forma intentamos conseguir un modelo que no esté mal influido por los datos previos donde se producía un aumento del paro. 
 
 ```{r, echo = FALSE, warning=FALSE, message=FALSE, include=FALSE}
-fdata_corto <- read_table2("UnemploymentSpain.dat")
+fdata_corto <- read.table("./datosCovid.txt",header = TRUE, sep = "")
 # Convert to time series object
 fdata_ts_corto <- ts(fdata_corto[147:250,])
 y_corto <- fdata_ts_corto[,2]
@@ -430,7 +430,7 @@ A continuación lo que haremos será identificar los coeficientes de nuestro mod
 a =TF.Identification.plot(x,TF.fit)
 ```
 
-Para el valor de b lo que haremos será ver cuantos coeficientes no significativo hay antes del primer coeficientes significativo, que en nuestro caso será el primero. Por tanto tendremos que b = 0. Para r lo que haremos será ver cuantos coeficientes significativos desde el primero (no incluido) hay hasta que aparece el primer coeficiente no significativo, que en nuestro caso es 3. Por último para ajustar s miramos el comportamiento de los coeficientes, donde se puede ver que la caida es de tipo exponencial, por tanto tomamos s igual a 1.
+Para el valor de b lo que haremos será ver cuantos coeficientes no significativo hay antes del primer coeficientes significativo, que en nuestro caso será el primero. Por tanto tendremos que b = 0. Para s lo que haremos será ver cuantos coeficientes significativos desde el primero (no incluido) hay hasta que aparece el primer coeficiente no significativo, que en nuestro caso es 3. Por último para ajustar r miramos el comportamiento de los coeficientes, donde se puede ver que la caida es de tipo exponencial, por tanto tomamos s igual a 1.
 
 Tras realizar este ajuste lo que haremos será ajustar los ordenes de las partes estacional y regular. Esto lo haremos con los errores que hemos visto antes.
 
@@ -487,10 +487,41 @@ Por último vamos a ver que tal ajusta nuestro modelo la serie temporal sobre la
 
 ```{r, echo = FALSE, warning=FALSE, message=FALSE, fig.align='center', fig.dim=c(5,3), fig.cap='Diferencia Modelaje'}
 # Check fitted
+y_est <- forecast(fitted(arima.fit), h=1)
 autoplot(y, series = "Real")+
   forecast::autolayer(fitted(arima.fit), series = "Fitted")
 ```
 Vemos que nuestro modelo ajusta bastante bien la serie temporal sobre la que hemos trabajado. Si es cierto que le cuesta algo más los cambios bruscos o los picos exagerados en poco tiempo. 
+
+
+No obstante, aquí se nos presenta un nuevo reto: saber cuándo tenemos que modificar la variable _x_ y volver a configurarla a 0, es decir; saber cuándo el COVID-19 ha dejado de tener efecto.
+Para ello hemos entrenado un modelo ARIMA (1,1,1),(1,1,0)(12) (el mismo que usamos arriba) y datos hasta el inicio de la época COVID, febrero 2020. Una vez que lo tenemos entrenado predecimos los resultados hasta el mes de noviembre de este año, 21 valores nuevos, como se ven en la imagen.
+
+
+
+
+
+
+![Predicción modelo sin Covid](Assigment-2_files/figure-latex/Pred no covid.png)
+
+
+
+
+
+El valor predicho para el mes de noviembre sin tener en cuenta el factor COVID-19 es aproximadamente 3.100.000. 
+La idea es comparar este valor con el valor predicho teniendo en cuenta la variable COVID, que ha sido aproximadamente 3.208.000.
+Esto quiere decir que a día de hoy sigue influyendo el factor covid en el número de desempleados y por lo tanto, es correcto utilizar la variable _x = 1_ para modelar nuestro modelo.
+
+
+
+
+
+
+
+
+
+
+
 
 \newpage
 
