@@ -430,11 +430,9 @@ A continuación lo que haremos será identificar los coeficientes de nuestro mod
 a =TF.Identification.plot(x2,TF.fit)
 ```
 
-<<<<<<< HEAD
-Para el valor de b lo que haremos será ver cuantos coeficientes no significativo hay antes del primer coeficientes significativo, que en nuestro caso será el primero. Por tanto tendremos que b = 0. Para s lo que haremos será ver cuantos coeficientes significativos desde el primero (no incluido) hay hasta que aparece el primer coeficiente no significativo, que en nuestro caso es 3. Por último para ajustar r miramos el comportamiento de los coeficientes, donde se puede ver que la caida es de tipo exponencial, por tanto tomamos s igual a 1.
-=======
+
 Para el valor de b lo que haremos será ver cuantos coeficientes no significativo hay antes del primer coeficientes significativo, que en nuestro caso será el primero. Por tanto tendremos que b = 0. Para s lo que haremos será ver cuantos coeficientes significativos desde el primero (no incluido) hay hasta que aparece el primer coeficiente no significativo, que en nuestro caso es 3. Por último para ajustar r miramos el comportamiento de los coeficientes, donde se puede ver que la caida es de tipo exponencial, por tanto tomamos r igual a 1.
->>>>>>> 7bfd972f100b9608fc156200569e9fbfea36da96
+
 
 Tras realizar este ajuste lo que haremos será ajustar los ordenes de las partes estacional y regular. Esto lo haremos con los errores que hemos visto antes.
 
@@ -491,12 +489,11 @@ Por último vamos a ver que tal ajusta nuestro modelo la serie temporal sobre la
 
 ```{r, echo = FALSE, warning=FALSE, message=FALSE, fig.align='center', fig.dim=c(5,3), fig.cap='Diferencia Modelaje'}
 # Check fitted
-<<<<<<< HEAD
+
 y_est <- forecast(fitted(arima.fit), h=1)
 autoplot(y, series = "Real")+
-=======
+
 autoplot(y2, series = "Real")+
->>>>>>> 7bfd972f100b9608fc156200569e9fbfea36da96
   forecast::autolayer(fitted(arima.fit), series = "Fitted")
 ```
 Vemos que nuestro modelo ajusta bastante bien la serie temporal sobre la que hemos trabajado. Si es cierto que le cuesta algo más los cambios bruscos o los picos exagerados en poco tiempo. 
