@@ -244,8 +244,8 @@ autoplot(y, series = "Real")+
 Sin embargo, estos resultados a pesar de que generan ruido blanco y la mayoría de variables aparecen muy significativas, generaba resultados ligeramente peores que los del modelo anterior. Pero esto lo veremos en mayor profundidad en un apartado posterior donde compararemos todos nuestros modelos.
 
 ```{r, echo = FALSE, warning=FALSE, message=FALSE}
-y_est <- forecast(sarima2.fit, h=1)
-y_est
+y_est2 <- forecast(sarima2.fit, h=1)
+y_est2
 ```
 
 \newpage
@@ -354,8 +354,8 @@ autoplot(y_corto, series = "Real")+
 Y también veremos la predicción que nos da nuestro modelo para este mes.
 
 ```{r, echo = FALSE, warning=FALSE, message=FALSE}
-y_est <- forecast(arimaCorto.fit, h=1)
-y_est
+y_est3 <- forecast(arimaCorto.fit, h=1)
+y_est3
 ```
 
 
@@ -374,7 +374,7 @@ fdata2  <- fdata2 %>%
   mutate(covid = ifelse(indice< 231,0,1)) %>%
   mutate(TOTAL = TOTAL /1000000) %>%
   select(-indice,-DATE)
-fdata2_ts <- ts(fdata2)
+fdata2_ts <- ts(fdata2,start = 2001, frequency = 12)
 ```
 
 ```{r echo = FALSE, warning=FALSE, message=FALSE, fig.align='center', fig.dim=c(5.5,3.5), fig.cap='Gráfico de datos '}
@@ -386,12 +386,12 @@ Tras ello iniciaremos nuestro modelo de regresión dinámica donde tendremos com
 Lo primero que veremos será la significancia de los coeficientes.
 
 ```{r, echo = FALSE, warning=FALSE, message=FALSE}
-y <- fdata2_ts[,1]
-x <- fdata2_ts[,2]
-TF.fit <- arima(y,
+y2 <- fdata2_ts[,1]
+x2 <- fdata2_ts[,2]
+TF.fit <- arima(y2,
                 order=c(1,0,0),
                 seasonal = list(order=c(1,0,0),period=12),
-                xtransf = x,
+                xtransf = x2,
                 transfer = list(c(0,5)), 
                 include.mean = TRUE,
                 method="ML")
@@ -405,20 +405,20 @@ Tras ello pasamos a ver los errores, donde en caso de no ser estacionarios tendr
 \newpage
 
 ```{r, echo = FALSE, warning=FALSE, message=FALSE, fig.align='center', fig.dim=c(5,3), fig.cap='Estudio de los errores'}
-TF.RegressionError.plot(y,x,TF.fit,lag.max = 200)
+TF.RegressionError.plot(y2,x2,TF.fit,lag.max = 200)
 ```
 
 Es bastante claro que los errores no son estacionarios, por tanto diferenciaremos.
 
 ```{r, echo = FALSE, warning=FALSE, message=FALSE, fig.align='center', fig.dim=c(5,3), fig.cap='Estudio de los errores'}
-TF.fit <- arima(y,
+TF.fit <- arima(y2,
                 order=c(1,1,0),
                 seasonal = list(order=c(1,1,0),period=12),
-                xtransf = x,
+                xtransf = x2,
                 transfer = list(c(0,5)), 
                 include.mean = TRUE,
                 method="ML")
-TF.RegressionError.plot(y,x,TF.fit,lag.max = 50)
+TF.RegressionError.plot(y2,x2,TF.fit,lag.max = 50)
 ```
 
 
@@ -427,15 +427,15 @@ Tras diferenciar tanto la parte regular como la estacional ya obtenemos unos err
 A continuación lo que haremos será identificar los coeficientes de nuestro modelo.
 
 ```{r, echo = FALSE, warning=FALSE, message=FALSE, fig.align='center', fig.dim=c(5,3), fig.cap='Estimación de coefs'}
-a =TF.Identification.plot(x,TF.fit)
+a =TF.Identification.plot(x2,TF.fit)
 ```
 
-Para el valor de b lo que haremos será ver cuantos coeficientes no significativo hay antes del primer coeficientes significativo, que en nuestro caso será el primero. Por tanto tendremos que b = 0. Para r lo que haremos será ver cuantos coeficientes significativos desde el primero (no incluido) hay hasta que aparece el primer coeficiente no significativo, que en nuestro caso es 3. Por último para ajustar s miramos el comportamiento de los coeficientes, donde se puede ver que la caida es de tipo exponencial, por tanto tomamos s igual a 1.
+Para el valor de b lo que haremos será ver cuantos coeficientes no significativo hay antes del primer coeficientes significativo, que en nuestro caso será el primero. Por tanto tendremos que b = 0. Para s lo que haremos será ver cuantos coeficientes significativos desde el primero (no incluido) hay hasta que aparece el primer coeficiente no significativo, que en nuestro caso es 3. Por último para ajustar r miramos el comportamiento de los coeficientes, donde se puede ver que la caida es de tipo exponencial, por tanto tomamos r igual a 1.
 
 Tras realizar este ajuste lo que haremos será ajustar los ordenes de las partes estacional y regular. Esto lo haremos con los errores que hemos visto antes.
 
 ```{r, echo = FALSE, warning=FALSE, message=FALSE, fig.align='center', fig.dim=c(5,3), fig.cap='Estudio de los errores'}
-TF.RegressionError.plot(y,x,TF.fit,lag.max = 50)
+TF.RegressionError.plot(y2,x2,TF.fit,lag.max = 50)
 ```
 
 Podemos ver que la gráfica ACF oscila y va decreciendo poco a poco, por lo que nos encontramos ante un proceso autorregresivo. En la parte regular tomamos un proceso AR(1) junto con un AM(1).
@@ -443,13 +443,13 @@ Podemos ver que la gráfica ACF oscila y va decreciendo poco a poco, por lo que 
 Ahora volvemos a realizar nuestro modelo pero ya con los coeficientes estimados y obtenemos una serie de métricas.
 
 ```{r, echo = FALSE, warning=FALSE, message=FALSE}
-xlag = Lag(x,0)   # b
+xlag = Lag(x2,0)   # b
 xlag[is.na(xlag)]=0
-arima.fit <- arima(y,
+arima.fit <- arima(y2,
                    order=c(1,1,1),
                    seasonal = list(order=c(1,1,0),period=12),
                    xtransf = xlag,
-                   transfer = list(c(3,1)), 
+                   transfer = list(c(1,3)), 
                    include.mean = FALSE,
                    method="ML")
 summary(arima.fit)
@@ -478,7 +478,7 @@ Veamos el gráfico CCF para comprobar correlaciones entre coeficientes.
 ```{r, echo = FALSE, warning=FALSE, message=FALSE, fig.align='center', fig.dim=c(5,3), fig.cap='Gráfico CCF'}
 res <- residuals(arima.fit)
 res[is.na(res)] <- 0
-ccf(y = res, x = x)
+ccf(y = res, x = x2)
 ```
 
 
@@ -487,20 +487,28 @@ Por último vamos a ver que tal ajusta nuestro modelo la serie temporal sobre la
 
 ```{r, echo = FALSE, warning=FALSE, message=FALSE, fig.align='center', fig.dim=c(5,3), fig.cap='Diferencia Modelaje'}
 # Check fitted
-autoplot(y, series = "Real")+
+autoplot(y2, series = "Real")+
   forecast::autolayer(fitted(arima.fit), series = "Fitted")
 ```
 Vemos que nuestro modelo ajusta bastante bien la serie temporal sobre la que hemos trabajado. Si es cierto que le cuesta algo más los cambios bruscos o los picos exagerados en poco tiempo. 
 
 \newpage
 
-# 3. Comparación modelos
+# 4. Comparación modelos
 
 Otra forma de comparar los modelos es a través de sus predicciones y modelado de la serie temporal.
 
 ```{r, echo = FALSE, warning=FALSE, message=FALSE, fig.align='center', fig.dim=c(6,4), fig.cap='Diferencia Modelaje'}
+
+autoplot(y, series = "REAL")+
+  forecast::autolayer(fitted(sarima.fit), series = "SARIMA")+
+  forecast::autolayer(fitted(sarima2.fit), series = "SARIMA2")+
+  forecast::autolayer(fitted(arima.fit)*1000000, series = "REG_DIN")
+```
+
+
+```{r, echo = FALSE, warning=FALSE, message=FALSE, fig.align='center', fig.dim=c(6,4), fig.cap='Diferencia Modelaje'}
 # Check fitted
-autoplot(y, series = "Real")+
-  forecast::autolayer(fitted(sarima.fit), series = "Fitted")+
-  forecast::autolayer(fitted(sarima2.fit), series = "Fitted")
+autoplot(y_corto, series = "TOTAL")+
+  forecast::autolayer(fitted(arimaCorto.fit), series = "ARIMA_CORTO")
 ```
