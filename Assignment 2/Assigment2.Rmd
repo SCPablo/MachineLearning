@@ -484,12 +484,8 @@ Por último vamos a ver que tal ajusta nuestro modelo la serie temporal sobre la
 
 ```{r, echo = FALSE, warning=FALSE, message=FALSE, fig.align='center', fig.dim=c(6,4), fig.cap='Diferencia Modelaje'}
 
-
-<<<<<<< HEAD
 y_est <- forecast(fitted(arima.fit), h=1)
 
-=======
->>>>>>> 542ca3474e5186ce15cf5bf5fd0dcbab4b0143c3
 autoplot(y2, series = "Real")+
   forecast::autolayer(fitted(arima.fit), series = "Fitted")
 ```
@@ -508,16 +504,9 @@ Para ello hemos entrenado un modelo ARIMA (1,1,1),(1,1,0)(12) (el mismo que usam
 ![Predicción modelo sin Covid](Assigment-2_files/figure-latex/Pred no covid.png)
 
 
-
-
-
 El valor predicho para el mes de noviembre sin tener en cuenta el factor COVID-19 es aproximadamente 3.100.000. 
 La idea es comparar este valor con el valor predicho teniendo en cuenta la variable COVID, que ha sido aproximadamente 3.208.000.
 Esto quiere decir que a día de hoy sigue influyendo el factor covid en el número de desempleados y por lo tanto, es correcto utilizar la variable _x = 1_ para modelar nuestro modelo.
-
-
-
-
 
 
 
@@ -532,27 +521,26 @@ Esto quiere decir que a día de hoy sigue influyendo el factor covid en el núme
 
 Una vez presentados diversos modelos para predecir el paro lo que debemos hacer es entender y conocer cual es el mejor de ello, dando puntos a favor y puntos en contra a cada uno de ellos.
 
-El primer parámetro que miraremos será el conjunto de errores que tiene cada modelos (RMSE, MSE...) para así conocer cual es el que minimiza el error en nuestros datos.
-
+Estudiaremos también la comparativa entre errores. Aunque es menos visual e intuitiva nos puede dar otro punto de vista sobre qué modelo se comporta mejor. Además, la última columna de la tabla refleja el desvío del número de paro predicho con el número real.
 
 \begin{table}[h]
 \centering
-\begin{tabular}{|c|c|c|c|}
+\begin{tabular}{|c|c|c|c|c|}
 \hline
- $-$ & ME & RMSE & MAE \\
+ $-$ & ME & RMSE & AIC & Predicción \\
 \hline
-SARIMA & -585,4926 & 42948,38 & 27682,11\\
+SARIMA & -585,4926 & 42948,38 & 5752 & +57936\\
 \hline
-SARIMA2 & -920,8681 & 40813.86 & 25549,44 \\
+SARIMA2 & -920,8681 & 40813.86 & 5736 & +37559 \\
 \hline
-REG DIN & 1,18 & 39103,75 & 28012,7 \\
+REG DIN & 1,18 & 39103,75 & -954 & +25313 \\
 \hline
-ARIMA REC & 221,1872 & 52421,33 & 28044,7 \\
+ARIMA REC & 221,1872 & 52421,33 & 2262 & +48710 \\
 \hline
 \end{tabular}
 \end{table}
 
-Podemos observar que en el RMSE, error que a nosotros nos interesa especialmente, el que minimiza el error es el modelo de regresión dinámica seguido del SARIMA2 y SARIMA Es cierto que el ARIMA recortado no da buenos resultados, ya que su RMSE es muy alto y dista mucho de los del resto.
+Como podemos ver en la tabla el modelo de regresión dinámica tiene mejores valores que el resto en todos los aspectos. Este modelo tiene errores muy pequeños ya que se adapta de gran manera al valor real. Esto ha provocado que haya sido el modelo que más se ha acercado al número total del parados del mes de agosto. Por todos estos motivos, podemos decir sin dudar, que el mejor modelo ha sido el de Regresión  dinámica.
 
 Pero no toda la comparación se debe centrar en los errores, también nos debe interesar el como se ajusta a la serie de partida los diferentes modelos.
 
@@ -566,6 +554,15 @@ autoplot(y, series = "REAL")+
   forecast::autolayer(fitted(arima.fit)*1000000, series = "REG_DIN")
 ```
 
+En la gráfica superior podemos observar que cada modelo se ajusta de manera distinta a la serie temporal. Es cierto que todos tienen una alta precisión pero en función de nuestras necesidades será mejor uno que otro. 
+
+Por ejemplo en el caso del modelo de regresión dinámica podemos observar que se ajusta peor que el resto a los cambios bruscos, es decir, se adapta peor a picos constantes ya que tiene una forma mucho más lineal que el resto. Este tipo de modelo nos puede ser útil si lo que buscamos es sencillez y linealidad.
+
+Por su parte los modelos SARIMA tienen casi las mismas características, podemos observar que tienden a sobreestimar el nivel de paro. Por ello este tipo de modelos pueden ser útiles cuando quieres trabajar sobre seguro, ya que al dar un número superior al que realmente es siempre se podrá entender como que más del que estima este modelo no va a haber. 
+
+Por tanto, en este caso no es relevante saber que modelo es mejor si no ser capaz de interpretar que modelo se adecua mejor a tus necesidades.
+
+Por último también cabe destacar que los modelos anteriores pueden compararse con el modelo ARIMA recortado, este tiene unas caracteristicas muy parecidas a los SARIMA. Pero podemos destacar que es incluso más conservador que los SARIMA.
 
 ```{r, echo = FALSE, warning=FALSE, message=FALSE, fig.align='center', fig.dim=c(6,4), fig.cap='Diferencia Modelaje'}
 # Check fitted
@@ -575,21 +572,6 @@ autoplot(y_corto, series = "TOTAL")+
 
 
 
-
-
-
-
-Estudiaremos también la comparativa entre errores. Aunque es menos visual e intuitiva nos puede dar otro punto de vista sobre qué modelo se comporta mejor. Además, la última columna de la tabla refleja el desvío del número de paro predicho con el número real.
-
-|              |   ME   |  RMSE |  AIC | Prediccion |
-|--------------|:------:|:-----:|:----:|------------|
-|    SARIMA    | -585   | 42948 | 5752 |   +57936   |
-|   SARIMA 2   | -920   | 40813 | 5736 |   +37559   |
-|    REG_DIN   | -0.001 | 0.029 | -954 |   +25313   |
-| SARIMA_CORTO | 221    | 52421 | 2262 |   +48710   |
-
-
-Como podemos ver en la tabla el modelo de regresión dinámica tiene mejores valores que el resto en todos los aspectos. Este modelo tiene errores muy pequeños ya que se adapta de gran manera al valor real. Esto ha provocado que haya sido el modelo que más se ha acercado al número total del parados del mes de agosto. Por todos estos motivos, podemos decir sin dudar, que el mejor modelo ha sido el de Regresión  dinámica.
 
 
 
