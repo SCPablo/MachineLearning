@@ -267,16 +267,16 @@ y_corto <- fdata_ts_corto[,2]
 autoplot(y_corto)
 ```
 
-Una vez tenemos estos datos, empezamos procediendo de igual forma. Analizamos si la serie es estacionaria en varianza.
+Una vez tenemos estos datos, procedemos de igual forma que antes. Analizamos primero si la serie es estacionaria en varianza.
 
 ```{r, echo = FALSE, warning=FALSE, message=FALSE, fig.align='center',fig.dim=c(5,3), fig.cap='Box-Cox datos recortados'}
 b =BoxCox.lambda.plot(y_corto,12)
 ```
 
 
-Que como se puede ver lo es ya que la línea azul es práctiacmente horizontal y R-squared = 0.001. Por lo tanto, no es necesario realizar una estabilización de varianza.
+Que como se puede ver en la imagen inferior la línea azul es práctiacmente horizontal y R-squared = 0.001. Por lo tanto, no es necesario realizar una estabilización de varianza mediante la tranformación Box-Cox.
 
-Empezamos por tanto representando la serie temporal junto con su ACF y PACF para inspeccionar la serie regular y estacional
+Empezamos por tanto representando la serie temporal junto con su ACF y PACF para inspeccionar la serie regular y estacional.
 
 ```{r, echo = FALSE, warning=FALSE, message=FALSE, fig.align='center', fig.dim=c(5,3), fig.cap='Modelo recortado'}
 ggtsdisplay(y_corto,lag.max = 100)
@@ -434,13 +434,7 @@ a =TF.Identification.plot(x2,TF.fit)
 Para el valor de b lo que haremos será ver cuantos coeficientes no significativo hay antes del primer coeficientes significativo, que en nuestro caso será el primero. Por tanto tendremos que b = 0. Para s lo que haremos será ver cuantos coeficientes significativos desde el primero (no incluido) hay hasta que aparece el primer coeficiente no significativo, que en nuestro caso es 3. Por último para ajustar r miramos el comportamiento de los coeficientes, donde se puede ver que la caida es de tipo exponencial, por tanto tomamos r igual a 1.
 
 
-Tras realizar este ajuste lo que haremos será ajustar los ordenes de las partes estacional y regular. Esto lo haremos con los errores que hemos visto antes.
-
-```{r, echo = FALSE, warning=FALSE, message=FALSE, fig.align='center', fig.dim=c(5,3), fig.cap='Estudio de los errores'}
-TF.RegressionError.plot(y2,x2,TF.fit,lag.max = 50)
-```
-
-Podemos ver que la gráfica ACF oscila y va decreciendo poco a poco, por lo que nos encontramos ante un proceso autorregresivo. En la parte regular tomamos un proceso AR(1) junto con un AM(1).
+Tras realizar este ajuste lo que haremos será ajustar los ordenes de las partes estacional y regular. Si volvemos a la última gráfica que mostraba los errores observamos que el ACF oscila y va decreciendo poco a poco, por lo que nos encontramos ante un proceso autorregresivo. En la parte regular tomamos un proceso AR(1) junto con un AM(1).
 
 Ahora volvemos a realizar nuestro modelo pero ya con los coeficientes estimados y obtenemos una serie de métricas.
 
@@ -475,7 +469,7 @@ CheckResiduals.ICAI(arima.fit)
 
 A pesar de que un coeficiente salga un poco de la banda de confianza podemos asumir que nuestro ruido es un ruido blanco.
 
-Veamos el gráfico CCF para comprobar correlaciones entre coeficientes.
+Veamos el gráfico CCF para comprobar correlaciones entre coeficientes a continuación.
 
 ```{r, echo = FALSE, warning=FALSE, message=FALSE, fig.align='center', fig.dim=c(5,3), fig.cap='Gráfico CCF'}
 res <- residuals(arima.fit)
@@ -484,14 +478,11 @@ ccf(y = res, x = x2)
 ```
 
 
-Por último vamos a ver que tal ajusta nuestro modelo la serie temporal sobre la que hemos estado trabajando.
+Por último vamos a ver que tal ajusta nuestro modelo la serie temporal sobre la que hemos estado trabajando en el grafico.
 
 
 ```{r, echo = FALSE, warning=FALSE, message=FALSE, fig.align='center', fig.dim=c(5,3), fig.cap='Diferencia Modelaje'}
 # Check fitted
-
-y_est <- forecast(fitted(arima.fit), h=1)
-autoplot(y, series = "Real")+
 
 autoplot(y2, series = "Real")+
   forecast::autolayer(fitted(arima.fit), series = "Fitted")
@@ -500,7 +491,7 @@ Vemos que nuestro modelo ajusta bastante bien la serie temporal sobre la que hem
 
 
 No obstante, aquí se nos presenta un nuevo reto: saber cuándo tenemos que modificar la variable _x_ y volver a configurarla a 0, es decir; saber cuándo el COVID-19 ha dejado de tener efecto.
-Para ello hemos entrenado un modelo ARIMA (1,1,1),(1,1,0)(12) (el mismo que usamos arriba) y datos hasta el inicio de la época COVID, febrero 2020. Una vez que lo tenemos entrenado predecimos los resultados hasta el mes de noviembre de este año, 21 valores nuevos, como se ven en la imagen.
+Para ello hemos entrenado un modelo ARIMA (1,1,1),(1,1,0)(12) (el mismo que usamos arriba) con datos hasta el inicio de la época COVID, febrero 2020. Una vez que lo tenemos entrenado predecimos los resultados hasta el mes de noviembre de este año, 21 valores nuevos, como se ven en la imagen.
 
 
 
@@ -548,3 +539,26 @@ autoplot(y, series = "REAL")+
 autoplot(y_corto, series = "TOTAL")+
   forecast::autolayer(fitted(arimaCorto.fit), series = "ARIMA_CORTO")
 ```
+
+
+
+
+
+
+
+Estudiaremos también la comparativa entre errores. Aunque es menos visual e intuitiva nos puede dar otro punto de vista sobre qué modelo se comporta mejor. Además, la última columna de la tabla refleja el desvío del número de paro predicho con el número real.
+
+|              |   ME   |  RMSE |  AIC | Prediccion |
+|--------------|:------:|:-----:|:----:|------------|
+|    SARIMA    | -585   | 42948 | 5752 |   +57936   |
+|   SARIMA 2   | -920   | 40813 | 5736 |   +37559   |
+|    REG_DIN   | -0.001 | 0.029 | -954 |   +25313   |
+| SARIMA_CORTO | 221    | 52421 | 2262 |   +48710   |
+
+
+Como podemos ver en la tabla el modelo de regresión dinámica tiene mejores valores que el resto en todos los aspectos. Este modelo tiene errores muy pequeños ya que se adapta de gran manera al valor real. Esto ha provocado que haya sido el modelo que más se ha acercado al número total del parados del mes de agosto. Por todos estos motivos, podemos decir sin dudar, que el mejor modelo ha sido el de Regresión  dinámica.
+
+
+
+
+
