@@ -9,7 +9,14 @@ library(lmtest)
 library(tseries) #contains adf.test function
 library(Hmisc)
 library(tidyverse)
-
+library(TSA)
+library(MLTools)
+library(fpp2)
+library(ggplot2)
+library(TSA)
+library(lmtest)  #contains coeftest function
+library(tseries) #contains adf.test function
+library(Hmisc) # 
 
 # Leemos los datos
 
@@ -139,19 +146,20 @@ fdata2 <- fdata
 fdata2  <- fdata2 %>%
   mutate(indice = seq(1:250)) %>%
   mutate(covid = ifelse(indice< 231,0,1)) %>%
+  mutate(TOTAL = TOTAL /1000000) %>%
   select(-indice,-DATE)
 
 fdata2_ts <- ts(fdata2)
 autoplot(fdata2_ts)
 
-y <- fdata2_ts[,1]/1000000
+y <- fdata2_ts[,1]
 x <- fdata2_ts[,2]
 
 TF.fit <- arima(y,
-                order=c(1,0,0),
-                seasonal = list(order=c(1,0,0),period=24),
+                order=c(1,1,0),
+                seasonal = list(order=c(1,1,0),period=12),
                 xtransf = x,
-                transfer = list(c(0,9)), #List with (r,s) orders
+                transfer = list(c(0,5)), 
                 include.mean = TRUE,
                 method="ML")
 
@@ -159,15 +167,16 @@ summary(TF.fit)
 coeftest(TF.fit)
 TF.RegressionError.plot(y,x,TF.fit,lag.max = 200)
 TF.Identification.plot(x,TF.fit)
+TF.RegressionError.plot(y, x, TF.fit, lag.max = 50)
 
 
 xlag = Lag(x,0)   # b
 xlag[is.na(xlag)]=0
 arima.fit <- arima(y,
-                   order=c(0,0,0),
-                   seasonal = list(order=c(0,0,0),period=24),
+                   order=c(1,1,0),
+                   seasonal = list(order=c(1,1,0),period=12),
                    xtransf = xlag,
-                   transfer = list(c(1,1)), #List with (r,s) orders
+                   transfer = list(c(3,1)), #List with (r,s) orders
                    include.mean = FALSE,
                    method="ML")
 summary(arima.fit) # summary of training errors and estimated coefficients
@@ -187,3 +196,4 @@ ccf(y = res, x = x)
 # Check fitted
 autoplot(y, series = "Real")+
   forecast::autolayer(fitted(arima.fit), series = "Fitted")
+
