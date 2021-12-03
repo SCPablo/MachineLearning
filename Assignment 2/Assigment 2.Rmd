@@ -43,7 +43,7 @@ library(tidyverse)
 ```{r, include = FALSE, ECHO = FALSE}
 fdata <- read_table2("UnemploymentSpain.dat")
 # Convert to time series object
-fdata_ts <- ts(fdata)
+fdata_ts <- ts(fdata, frequency = 12, start = 2001)
 y <- fdata_ts[,2]
 ```
 
