@@ -398,6 +398,7 @@ TF.fit <- arima(y2,
 coeftest(TF.fit)
 ```
 
+
 Obtenemos que una parte considerable de nuestros coeficientes son significantes. 
 
 Tras ello pasamos a ver los errores, donde en caso de no ser estacionarios tendremos que diferenciar para conseguir que sea estacionario.
@@ -487,15 +488,15 @@ ccf(y = res, x = x2)
 Por último vamos a ver que tal ajusta nuestro modelo la serie temporal sobre la que hemos estado trabajando.
 
 
-```{r, echo = FALSE, warning=FALSE, message=FALSE, fig.align='center', fig.dim=c(5,3), fig.cap='Diferencia Modelaje'}
-# Check fitted
+```{r, echo = FALSE, warning=FALSE, message=FALSE, fig.align='center', fig.dim=c(6,4), fig.cap='Diferencia Modelaje'}
+
 
 y_est <- forecast(fitted(arima.fit), h=1)
-autoplot(y, series = "Real")+
 
 autoplot(y2, series = "Real")+
   forecast::autolayer(fitted(arima.fit), series = "Fitted")
 ```
+
 Vemos que nuestro modelo ajusta bastante bien la serie temporal sobre la que hemos trabajado. Si es cierto que le cuesta algo más los cambios bruscos o los picos exagerados en poco tiempo. 
 
 
@@ -505,7 +506,7 @@ Para ello hemos entrenado un modelo ARIMA (1,1,1),(1,1,0)(12) (el mismo que usam
 
 
 
-
+\newpage
 
 ![Predicción modelo sin Covid](Assigment-2_files/figure-latex/Pred no covid.png)
 
@@ -532,7 +533,33 @@ Esto quiere decir que a día de hoy sigue influyendo el factor covid en el núme
 
 # 4. Comparación modelos
 
-Otra forma de comparar los modelos es a través de sus predicciones y modelado de la serie temporal.
+Una vez presentados diversos modelos para predecir el paro lo que debemos hacer es entender y conocer cual es el mejor de ello, dando puntos a favor y puntos en contra a cada uno de ellos.
+
+El primer parámetro que miraremos será el conjunto de errores que tiene cada modelos (RMSE, MSE...) para así conocer cual es el que minimiza el error en nuestros datos.
+
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+ $-$ & ME & RMSE & MAE \\
+\hline
+SARIMA & -585,4926 & 42948,38 & 27682,11\\
+\hline
+SARIMA2 & -920,8681 & 40813.86 & 25549,44 \\
+\hline
+REG DIN & 1,18 & 39103,75 & 28012,7 \\
+\hline
+ARIMA REC & 221,1872 & 52421,33 & 28044,7 \\
+\hline
+\end{tabular}
+\end{table}
+
+Podemos observar que en el RMSE, error que a nosotros nos interesa especialmente, el que minimiza el error es el modelo de regresión dinámica seguido del SARIMA2 y SARIMA Es cierto que el ARIMA recortado no da buenos resultados, ya que su RMSE es muy alto y dista mucho de los del resto.
+
+Pero no toda la comparación se debe centrar en los errores, también nos debe interesar el como se ajusta a la serie de partida los diferentes modelos.
+
+Esto último lo vamos a ver a través de sus predicciones y modelado de la serie temporal.
 
 ```{r, echo = FALSE, warning=FALSE, message=FALSE, fig.align='center', fig.dim=c(6,4), fig.cap='Diferencia Modelaje'}
 
